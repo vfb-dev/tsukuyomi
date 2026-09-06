@@ -4,6 +4,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 public class Movie {
@@ -12,11 +15,24 @@ public class Movie {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
     private String title;
+
+    @NotBlank
     private String description;
+
+    @NotNull
+    @Min(1888)
     private Integer releaseYear;
+
+    @NotNull
+    @Min(1)
     private Integer durationMinutes;
+
+    @NotBlank
     private String posterUrl;
+
+    @NotBlank
     private String videoUrl;
 
     public Movie() {
