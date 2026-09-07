@@ -1,20 +1,10 @@
-import type { Movie } from "../../../types/movie";
+import { getMovie } from "@/lib/api";
 
 type MoviePageProps = {
   params: Promise<{
     id: string;
   }>;
 };
-
-async function getMovie(id: string): Promise<Movie> {
-  const response = await fetch(`http://localhost:8080/api/movies/${id}`);
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch movie");
-  }
-
-  return response.json();
-}
 
 export default async function MoviePage({ params }: MoviePageProps) {
   const { id } = await params;

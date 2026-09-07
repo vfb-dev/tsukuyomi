@@ -12,3 +12,13 @@ export async function getMovies(): Promise<Movie[]> {
 
   return response.json();
 }
+
+export async function getMovie(id: string): Promise<Movie> {
+  const response = await fetch(`${API_BASE_URL}/api/movies/${id}`);
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch movie");
+  }
+
+  return response.json();
+}
