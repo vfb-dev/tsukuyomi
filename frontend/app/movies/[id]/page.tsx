@@ -26,22 +26,28 @@ export default async function MoviePage({ params }: MoviePageProps) {
         Back to movies
       </a>
 
-      <section className="mt-8 grid gap-8 md:grid-cols-[260px_1fr]">
-        <div className="overflow-hidden rounded border border-gray-800 bg-zinc-900">
-          <img
-            src={movie.posterUrl}
-            alt={`${movie.title} poster`}
-            className="h-full w-full object-cover"
-          />
-        </div>
-
+      <section className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div>
-          <h1 className="text-4xl font-bold">{movie.title}</h1>
+          <video
+            src={movie.videoUrl}
+            controls
+            className="aspect-video w-full rounded bg-zinc-900"
+          />
+
+          <h1 className="mt-6 text-4xl font-bold">{movie.title}</h1>
           <p className="mt-3 text-gray-400">
             {movie.releaseYear} • {movie.durationMinutes} min
           </p>
-          <p className="mt-6 max-w-2xl text-gray-200">{movie.description}</p>
+          <p className="mt-6 max-w-3xl text-gray-200">{movie.description}</p>
         </div>
+
+        <aside className="hidden lg:block">
+          <img
+            src={movie.posterUrl}
+            alt={`${movie.title} poster`}
+            className="w-full rounded border border-gray-800 object-cover"
+          />
+        </aside>
       </section>
     </main>
   );
