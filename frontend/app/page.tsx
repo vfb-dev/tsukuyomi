@@ -1,3 +1,4 @@
+import { MovieCard } from "../components/MovieCard";
 import { getMovies } from "../lib/api";
 
 export default async function Home() {
@@ -13,16 +14,11 @@ export default async function Home() {
         {movies.length === 0 ? (
           <p className="mt-4 text-gray-400">No movies found.</p>
         ) : (
-          <ul className="mt-4 space-y-3">
+          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {movies.map((movie) => (
-              <li key={movie.id} className="rounded border border-gray-800 p-4">
-                <h3 className="font-semibold">{movie.title}</h3>
-                <p className="text-sm text-gray-400">
-                  {movie.releaseYear} • {movie.durationMinutes} min
-                </p>
-              </li>
+              <MovieCard key={movie.id} movie={movie} />
             ))}
-          </ul>
+          </div>
         )}
       </section>
     </main>
