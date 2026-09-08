@@ -17,6 +17,14 @@ public class MovieService {
         return movieRepository.findAll();
     }
 
+    public List<Movie> searchMovies(String query) {
+        if (query == null || query.isBlank()) {
+            return getAllMovies();
+        }
+
+        return movieRepository.findByTitleContainingIgnoreCase(query);
+    }
+
     public Movie getMovieById(Long id) {
         return movieRepository.findById(id)
                 .orElseThrow(() -> new MovieNotFoundException(id));
