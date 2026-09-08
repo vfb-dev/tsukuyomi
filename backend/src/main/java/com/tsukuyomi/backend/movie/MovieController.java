@@ -40,13 +40,13 @@ public class MovieController {
     }
 
     @PostMapping
-    public Movie createMovie(@Valid @RequestBody Movie movie) {
-        return movieService.createMovie(movie);
+    public Movie createMovie(@Valid @RequestBody MovieRequest request) {
+        return movieService.createMovie(request);
     }
 
     @PutMapping("/{id}")
-    public Movie updateMovie(@PathVariable Long id, @Valid @RequestBody Movie updatedMovie) {
-        return movieService.updateMovie(id, updatedMovie);
+    public Movie updateMovie(@PathVariable Long id, @Valid @RequestBody MovieRequest request) {
+        return movieService.updateMovie(id, request);
     }
 
     @DeleteMapping("/{id}")

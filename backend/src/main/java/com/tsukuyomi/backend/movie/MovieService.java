@@ -41,20 +41,30 @@ public class MovieService {
                 .orElseThrow(() -> new MovieNotFoundException(id));
     }
 
-    public Movie createMovie(Movie movie) {
+    public Movie createMovie(MovieRequest request) {
+        Movie movie = new Movie();
+
+        movie.setTitle(request.getTitle());
+        movie.setDescription(request.getDescription());
+        movie.setReleaseYear(request.getReleaseYear());
+        movie.setDurationMinutes(request.getDurationMinutes());
+        movie.setPosterUrl(request.getPosterUrl());
+        movie.setVideoUrl(request.getVideoUrl());
+        movie.setCategory(request.getCategory());
+
         return movieRepository.save(movie);
     }
 
-    public Movie updateMovie(Long id, Movie updatedMovie) {
+    public Movie updateMovie(Long id, MovieRequest request) {
         Movie movie = getMovieById(id);
 
-        movie.setTitle(updatedMovie.getTitle());
-        movie.setDescription(updatedMovie.getDescription());
-        movie.setReleaseYear(updatedMovie.getReleaseYear());
-        movie.setDurationMinutes(updatedMovie.getDurationMinutes());
-        movie.setPosterUrl(updatedMovie.getPosterUrl());
-        movie.setVideoUrl(updatedMovie.getVideoUrl());
-        movie.setCategory(updatedMovie.getCategory());
+        movie.setTitle(request.getTitle());
+        movie.setDescription(request.getDescription());
+        movie.setReleaseYear(request.getReleaseYear());
+        movie.setDurationMinutes(request.getDurationMinutes());
+        movie.setPosterUrl(request.getPosterUrl());
+        movie.setVideoUrl(request.getVideoUrl());
+        movie.setCategory(request.getCategory());
 
         return movieRepository.save(movie);
     }
