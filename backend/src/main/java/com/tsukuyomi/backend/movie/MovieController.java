@@ -27,8 +27,11 @@ public class MovieController {
     }
 
     @GetMapping
-    public List<Movie> getMovies(@RequestParam(required = false) String search) {
-        return movieService.searchMovies(search);
+    public List<Movie> getMovies(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String category
+    ) {
+        return movieService.searchMovies(search, category);
     }
 
     @GetMapping("/{id}")

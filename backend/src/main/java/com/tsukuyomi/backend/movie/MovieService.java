@@ -17,12 +17,23 @@ public class MovieService {
         return movieRepository.findAll();
     }
 
-    public List<Movie> searchMovies(String query) {
-        if (query == null || query.isBlank()) {
-            return getAllMovies();
+    public List<Movie> searchMovies(String search, String category) {
+        boolean hasSearch = search != null && !search.isBlank();
+        boolean hasCategory = category != null && !category.isBlank();
+
+        if (hasSearch && hasCategory) {
+            return movieRepository.findByTitleContainingIgnoreCaseAndCategoryIgnoreCase(search, category);
         }
 
-        return movieRepository.findByTitleContainingIgnoreCase(query);
+        if (hasSearch) {
+            return movieRepository.findByTitleContainingIgnoreCase(search);
+        }
+
+        if (hasCategory) {
+            return movieRepository.findByCategoryIgnoreCase(category);
+        }
+
+        return getAllMovies();
     }
 
     public Movie getMovieById(Long id) {

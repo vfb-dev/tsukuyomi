@@ -3,11 +3,22 @@ import type { Movie } from "../types/movie";
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
 
-export async function getMovies(search?: string): Promise<Movie[]> {
+type GetMoviesOptions = {
+  search?: string;
+  category?: string;
+};
+
+export async function getMovies(
+  options: GetMoviesOptions = {},
+): Promise<Movie[]> {
   const url = new URL(`${API_BASE_URL}/api/movies`);
 
-  if (search) {
-    url.searchParams.set("search", search);
+  if (options.search) {
+    url.searchParams.set("search", options.search);
+  }
+
+  if (options.category) {
+    url.searchParams.set("category", options.category);
   }
 
   const response = await fetch(url);
