@@ -8,6 +8,16 @@ type GetMoviesOptions = {
   category?: string;
 };
 
+export type CreateMovieInput = {
+  title: string;
+  description: string;
+  releaseYear: number;
+  durationMinutes: number;
+  posterUrl: string;
+  videoUrl: string;
+  category: string;
+};
+
 export async function getMovies(
   options: GetMoviesOptions = {},
 ): Promise<Movie[]> {
@@ -35,6 +45,22 @@ export async function getMovie(id: string): Promise<Movie> {
 
   if (!response.ok) {
     throw new Error("Failed to fetch movie");
+  }
+
+  return response.json();
+}
+
+export async function createMovie(input: CreateMovieInput): Promise<Movie> {
+  const response = await fetch(`${API_BASE_URL}/api/movies`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(input),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to create movie");
   }
 
   return response.json();

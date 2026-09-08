@@ -12,6 +12,9 @@ export function Header() {
         <a href="/" className="hover:text-white">
           Movies
         </a>
+        <a href="/admin/movies" className="hover:text-white">
+          Admin
+        </a>
       </nav>
     </header>
   );
