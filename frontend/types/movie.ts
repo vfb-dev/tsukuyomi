@@ -6,4 +6,5 @@ export type Movie = {
   durationMinutes: number;
   posterUrl: string;
   videoUrl: string;
+  category: string;
 };

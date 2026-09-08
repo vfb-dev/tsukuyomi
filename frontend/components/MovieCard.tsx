@@ -19,7 +19,11 @@ export function MovieCard({ movie }: MovieCardProps) {
       </div>
 
       <div className="p-4">
-        <h3 className="font-semibold">{movie.title}</h3>
+        <span className="rounded bg-red-600 px-2 py-1 text-xs font-semibold text-white">
+          {movie.category}
+        </span>
+
+        <h3 className="mt-3 font-semibold">{movie.title}</h3>
         <p className="mt-1 text-sm text-gray-400">
           {movie.releaseYear} • {movie.durationMinutes} min
         </p>

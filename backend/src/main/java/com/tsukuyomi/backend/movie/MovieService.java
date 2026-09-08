@@ -43,6 +43,7 @@ public class MovieService {
         movie.setDurationMinutes(updatedMovie.getDurationMinutes());
         movie.setPosterUrl(updatedMovie.getPosterUrl());
         movie.setVideoUrl(updatedMovie.getVideoUrl());
+        movie.setCategory(updatedMovie.getCategory());
 
         return movieRepository.save(movie);
     }

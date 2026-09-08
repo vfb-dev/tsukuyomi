@@ -35,6 +35,9 @@ public class Movie {
     @NotBlank
     private String videoUrl;
 
+    @NotBlank
+    private String category;
+
     public Movie() {
     }
 
@@ -92,5 +95,13 @@ public class Movie {
 
     public void setVideoUrl(String videoUrl) {
         this.videoUrl = videoUrl;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 }

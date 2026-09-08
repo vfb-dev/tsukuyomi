@@ -28,11 +28,19 @@ export default async function MoviePage({ params }: MoviePageProps) {
               className="aspect-video w-full rounded bg-zinc-900"
             />
 
-            <h1 className="mt-6 text-4xl font-bold">{movie.title}</h1>
-            <p className="mt-3 text-gray-400">
-              {movie.releaseYear} • {movie.durationMinutes} min
-            </p>
-            <p className="mt-6 max-w-3xl text-gray-200">{movie.description}</p>
+            <div className="mt-6">
+              <span className="rounded bg-red-600 px-2 py-1 text-xs font-semibold text-white">
+                {movie.category}
+              </span>
+
+              <h1 className="mt-4 text-4xl font-bold">{movie.title}</h1>
+              <p className="mt-3 text-gray-400">
+                {movie.releaseYear} • {movie.durationMinutes} min
+              </p>
+              <p className="mt-6 max-w-3xl text-gray-200">
+                {movie.description}
+              </p>
+            </div>
           </div>
 
           <aside className="hidden lg:block">
