@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { createMovie } from "@/lib/api";
 import { MovieFormFields } from "@/components/MovieFormFields";
+import { createMovie } from "@/lib/api";
+import { getMovieInputFromFormData } from "@/lib/movieForm";
 
 export function CreateMovieForm() {
   const router = useRouter();
@@ -17,16 +18,7 @@ export function CreateMovieForm() {
 
     const form = event.currentTarget;
     const formData = new FormData(form);
-
-    const movieInput = {
-      title: String(formData.get("title")),
-      description: String(formData.get("description")),
-      releaseYear: Number(formData.get("releaseYear")),
-      durationMinutes: Number(formData.get("durationMinutes")),
-      category: String(formData.get("category")),
-      posterUrl: String(formData.get("posterUrl")),
-      videoUrl: String(formData.get("videoUrl")),
-    };
+    const movieInput = getMovieInputFromFormData(formData);
 
     try {
       setStatus("saving");

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { MovieFormFields } from "@/components/MovieFormFields";
 import { updateMovie } from "@/lib/api";
+import { getMovieInputFromFormData } from "@/lib/movieForm";
 import { Movie } from "@/types/movie";
 
 type EditMovieFormProps = {
@@ -21,16 +22,7 @@ export function EditMovieForm({ movie }: EditMovieFormProps) {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
-
-    const updatedMovie = {
-      title: String(formData.get("title")),
-      description: String(formData.get("description")),
-      releaseYear: Number(formData.get("releaseYear")),
-      durationMinutes: Number(formData.get("durationMinutes")),
-      posterUrl: String(formData.get("posterUrl")),
-      videoUrl: String(formData.get("videoUrl")),
-      category: String(formData.get("category")),
-    };
+    const updatedMovie = getMovieInputFromFormData(formData);
 
     try {
       setStatus("saving");
