@@ -13,35 +13,34 @@ public class MovieService {
         this.movieRepository = movieRepository;
     }
 
-    public List<Movie> getAllMovies() {
-        return movieRepository.findAll();
-    }
-
-    public List<Movie> searchMovies(String search, String category) {
+    public List<MovieResponse> searchMovies(String search, String category) {
         boolean hasSearch = search != null && !search.isBlank();
         boolean hasCategory = category != null && !category.isBlank();
 
+        List<Movie> movies;
+
         if (hasSearch && hasCategory) {
-            return movieRepository.findByTitleContainingIgnoreCaseAndCategoryIgnoreCase(search, category);
+            movies = movieRepository.findByTitleContainingIgnoreCaseAndCategoryIgnoreCase(search, category);
+        } else if (hasSearch) {
+            movies = movieRepository.findByTitleContainingIgnoreCase(search);
+        } else if (hasCategory) {
+            movies = movieRepository.findByCategoryIgnoreCase(category);
+        } else {
+            movies = movieRepository.findAll();
         }
 
-        if (hasSearch) {
-            return movieRepository.findByTitleContainingIgnoreCase(search);
-        }
-
-        if (hasCategory) {
-            return movieRepository.findByCategoryIgnoreCase(category);
-        }
-
-        return getAllMovies();
+        return movies.stream()
+                .map(this::toResponse)
+                .toList();
     }
 
-    public Movie getMovieById(Long id) {
-        return movieRepository.findById(id)
-                .orElseThrow(() -> new MovieNotFoundException(id));
+    public MovieResponse getMovieById(Long id) {
+        Movie movie = findMovieById(id);
+
+        return toResponse(movie);
     }
 
-    public Movie createMovie(MovieRequest request) {
+    public MovieResponse createMovie(MovieRequest request) {
         Movie movie = new Movie();
 
         movie.setTitle(request.getTitle());
@@ -52,11 +51,13 @@ public class MovieService {
         movie.setVideoUrl(request.getVideoUrl());
         movie.setCategory(request.getCategory());
 
-        return movieRepository.save(movie);
+        Movie savedMovie = movieRepository.save(movie);
+
+        return toResponse(savedMovie);
     }
 
-    public Movie updateMovie(Long id, MovieRequest request) {
-        Movie movie = getMovieById(id);
+    public MovieResponse updateMovie(Long id, MovieRequest request) {
+        Movie movie = findMovieById(id);
 
         movie.setTitle(request.getTitle());
         movie.setDescription(request.getDescription());
@@ -66,11 +67,32 @@ public class MovieService {
         movie.setVideoUrl(request.getVideoUrl());
         movie.setCategory(request.getCategory());
 
-        return movieRepository.save(movie);
+        Movie updatedMovie = movieRepository.save(movie);
+
+        return toResponse(updatedMovie);
     }
 
     public void deleteMovie(Long id) {
-        Movie movie = getMovieById(id);
+        Movie movie = findMovieById(id);
+
         movieRepository.delete(movie);
+    }
+
+    private Movie findMovieById(Long id) {
+        return movieRepository.findById(id)
+                .orElseThrow(() -> new MovieNotFoundException(id));
+    }
+
+    private MovieResponse toResponse(Movie movie) {
+        return new MovieResponse(
+                movie.getId(),
+                movie.getTitle(),
+                movie.getDescription(),
+                movie.getReleaseYear(),
+                movie.getDurationMinutes(),
+                movie.getPosterUrl(),
+                movie.getVideoUrl(),
+                movie.getCategory()
+        );
     }
 }

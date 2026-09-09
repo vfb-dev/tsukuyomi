@@ -27,7 +27,7 @@ public class MovieController {
     }
 
     @GetMapping
-    public List<Movie> getMovies(
+    public List<MovieResponse> getMovies(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String category
     ) {
@@ -35,17 +35,17 @@ public class MovieController {
     }
 
     @GetMapping("/{id}")
-    public Movie getMovieById(@PathVariable Long id) {
+    public MovieResponse getMovieById(@PathVariable Long id) {
         return movieService.getMovieById(id);
     }
 
     @PostMapping
-    public Movie createMovie(@Valid @RequestBody MovieRequest request) {
+    public MovieResponse createMovie(@Valid @RequestBody MovieRequest request) {
         return movieService.createMovie(request);
     }
 
     @PutMapping("/{id}")
-    public Movie updateMovie(@PathVariable Long id, @Valid @RequestBody MovieRequest request) {
+    public MovieResponse updateMovie(@PathVariable Long id, @Valid @RequestBody MovieRequest request) {
         return movieService.updateMovie(id, request);
     }
 
