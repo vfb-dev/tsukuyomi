@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
 import { EditMovieForm } from "@/components/EditMovieForm";
 import { Header } from "@/components/Header";
@@ -13,6 +14,10 @@ type EditMoviePageProps = {
 export default async function EditMoviePage({ params }: EditMoviePageProps) {
   const { id } = await params;
   const movie = await getMovie(Number(id));
+
+  if (!movie) {
+    notFound();
+  }
 
   return (
     <main className="min-h-screen bg-black text-white">

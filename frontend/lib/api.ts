@@ -47,10 +47,14 @@ export async function getMovies(
   return response.json();
 }
 
-export async function getMovie(id: number): Promise<Movie> {
+export async function getMovie(id: number): Promise<Movie | null> {
   const response = await fetch(`${API_BASE_URL}/api/movies/${id}`, {
     cache: "no-store",
   });
+
+  if (response.status === 404) {
+    return null;
+  }
 
   if (!response.ok) {
     throw new Error("Failed to fetch movie");

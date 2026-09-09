@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
 import { Header } from "@/components/Header";
 import { getMovie } from "@/lib/api";
@@ -13,12 +14,16 @@ export default async function MoviePage({ params }: MoviePageProps) {
   const { id } = await params;
   const movie = await getMovie(Number(id));
 
+  if (!movie) {
+    notFound();
+  }
+
   return (
     <main className="min-h-screen bg-black text-white">
       <Header />
 
       <section className="px-8 py-10">
-        <Link href="/" className="text-sm text-gray-400 hover:text-white">
+        <Link href="/movies" className="text-sm text-gray-400 hover:text-white">
           Back to movies
         </Link>
 
