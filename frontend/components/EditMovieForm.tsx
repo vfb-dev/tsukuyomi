@@ -2,8 +2,10 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Movie } from "@/types/movie";
+
+import { MovieFormFields } from "@/components/MovieFormFields";
 import { updateMovie } from "@/lib/api";
+import { Movie } from "@/types/movie";
 
 type EditMovieFormProps = {
   movie: Movie;
@@ -48,128 +50,7 @@ export function EditMovieForm({ movie }: EditMovieFormProps) {
       onSubmit={handleSubmit}
       className="space-y-5 rounded border border-zinc-800 bg-zinc-950 p-6"
     >
-      <div>
-        <label
-          htmlFor="title"
-          className="block text-sm font-medium text-zinc-200"
-        >
-          Title
-        </label>
-        <input
-          id="title"
-          name="title"
-          type="text"
-          required
-          defaultValue={movie.title}
-          className="mt-2 w-full rounded border border-zinc-700 bg-zinc-900 px-3 py-2 text-white outline-none focus:border-red-500"
-        />
-      </div>
-
-      <div>
-        <label
-          htmlFor="description"
-          className="block text-sm font-medium text-zinc-200"
-        >
-          Description
-        </label>
-        <textarea
-          id="description"
-          name="description"
-          required
-          defaultValue={movie.description}
-          rows={4}
-          className="mt-2 w-full rounded border border-zinc-700 bg-zinc-900 px-3 py-2 text-white outline-none focus:border-red-500"
-        />
-      </div>
-
-      <div className="grid gap-5 sm:grid-cols-2">
-        <div>
-          <label
-            htmlFor="releaseYear"
-            className="block text-sm font-medium text-zinc-200"
-          >
-            Release year
-          </label>
-          <input
-            id="releaseYear"
-            name="releaseYear"
-            type="number"
-            required
-            min={1888}
-            defaultValue={movie.releaseYear}
-            className="mt-2 w-full rounded border border-zinc-700 bg-zinc-900 px-3 py-2 text-white outline-none focus:border-red-500"
-          />
-        </div>
-
-        <div>
-          <label
-            htmlFor="durationMinutes"
-            className="block text-sm font-medium text-zinc-200"
-          >
-            Duration minutes
-          </label>
-          <input
-            id="durationMinutes"
-            name="durationMinutes"
-            type="number"
-            required
-            min={1}
-            defaultValue={movie.durationMinutes}
-            className="mt-2 w-full rounded border border-zinc-700 bg-zinc-900 px-3 py-2 text-white outline-none focus:border-red-500"
-          />
-        </div>
-      </div>
-
-      <div>
-        <label
-          htmlFor="category"
-          className="block text-sm font-medium text-zinc-200"
-        >
-          Category
-        </label>
-        <input
-          id="category"
-          name="category"
-          type="text"
-          required
-          defaultValue={movie.category}
-          className="mt-2 w-full rounded border border-zinc-700 bg-zinc-900 px-3 py-2 text-white outline-none focus:border-red-500"
-        />
-      </div>
-
-      <div>
-        <label
-          htmlFor="posterUrl"
-          className="block text-sm font-medium text-zinc-200"
-        >
-          Poster URL
-        </label>
-        <input
-          id="posterUrl"
-          name="posterUrl"
-          type="url"
-          required
-          defaultValue={movie.posterUrl}
-          className="mt-2 w-full rounded border border-zinc-700 bg-zinc-900 px-3 py-2 text-white outline-none focus:border-red-500"
-        />
-      </div>
-
-      <div>
-        <label
-          htmlFor="videoUrl"
-          className="block text-sm font-medium text-zinc-200"
-        >
-          Video URL
-        </label>
-        <input
-          id="videoUrl"
-          name="videoUrl"
-          type="url"
-          required
-          defaultValue={movie.videoUrl}
-          className="mt-2 w-full rounded border border-zinc-700 bg-zinc-900 px-3 py-2 text-white outline-none focus:border-red-500"
-        />
-      </div>
+      <MovieFormFields defaultValues={movie} />
 
       <div className="flex items-center gap-4">
         <button

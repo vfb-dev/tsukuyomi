@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { createMovie } from "../lib/api";
+import { createMovie } from "@/lib/api";
+import { MovieFormFields } from "@/components/MovieFormFields";
 
 export function CreateMovieForm() {
   const router = useRouter();
@@ -45,115 +46,7 @@ export function CreateMovieForm() {
       onSubmit={handleSubmit}
       className="mt-8 grid gap-4 rounded border border-gray-800 bg-zinc-950 p-6"
     >
-      <div className="grid gap-2">
-        <label htmlFor="title" className="text-sm font-medium text-gray-300">
-          Title
-        </label>
-        <input
-          id="title"
-          name="title"
-          type="text"
-          required
-          className="rounded border border-gray-800 bg-black px-3 py-2 text-sm text-white outline-none focus:border-red-600"
-        />
-      </div>
-
-      <div className="grid gap-2">
-        <label
-          htmlFor="description"
-          className="text-sm font-medium text-gray-300"
-        >
-          Description
-        </label>
-        <textarea
-          id="description"
-          name="description"
-          rows={4}
-          required
-          className="rounded border border-gray-800 bg-black px-3 py-2 text-sm text-white outline-none focus:border-red-600"
-        />
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-3">
-        <div className="grid gap-2">
-          <label
-            htmlFor="releaseYear"
-            className="text-sm font-medium text-gray-300"
-          >
-            Release Year
-          </label>
-          <input
-            id="releaseYear"
-            name="releaseYear"
-            type="number"
-            min={1888}
-            required
-            className="rounded border border-gray-800 bg-black px-3 py-2 text-sm text-white outline-none focus:border-red-600"
-          />
-        </div>
-
-        <div className="grid gap-2">
-          <label
-            htmlFor="durationMinutes"
-            className="text-sm font-medium text-gray-300"
-          >
-            Duration Minutes
-          </label>
-          <input
-            id="durationMinutes"
-            name="durationMinutes"
-            type="number"
-            min={1}
-            required
-            className="rounded border border-gray-800 bg-black px-3 py-2 text-sm text-white outline-none focus:border-red-600"
-          />
-        </div>
-
-        <div className="grid gap-2">
-          <label
-            htmlFor="category"
-            className="text-sm font-medium text-gray-300"
-          >
-            Category
-          </label>
-          <input
-            id="category"
-            name="category"
-            type="text"
-            required
-            className="rounded border border-gray-800 bg-black px-3 py-2 text-sm text-white outline-none focus:border-red-600"
-          />
-        </div>
-      </div>
-
-      <div className="grid gap-2">
-        <label
-          htmlFor="posterUrl"
-          className="text-sm font-medium text-gray-300"
-        >
-          Poster URL
-        </label>
-        <input
-          id="posterUrl"
-          name="posterUrl"
-          type="url"
-          required
-          className="rounded border border-gray-800 bg-black px-3 py-2 text-sm text-white outline-none focus:border-red-600"
-        />
-      </div>
-
-      <div className="grid gap-2">
-        <label htmlFor="videoUrl" className="text-sm font-medium text-gray-300">
-          Video URL
-        </label>
-        <input
-          id="videoUrl"
-          name="videoUrl"
-          type="url"
-          required
-          className="rounded border border-gray-800 bg-black px-3 py-2 text-sm text-white outline-none focus:border-red-600"
-        />
-      </div>
+      <MovieFormFields />
 
       <button
         type="submit"
