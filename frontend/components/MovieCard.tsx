@@ -1,4 +1,6 @@
-import type { Movie } from "../types/movie";
+import Link from "next/link";
+
+import type { Movie } from "@/types/movie";
 
 type MovieCardProps = {
   movie: Movie;
@@ -6,7 +8,7 @@ type MovieCardProps = {
 
 export function MovieCard({ movie }: MovieCardProps) {
   return (
-    <a
+    <Link
       href={`/movies/${movie.id}`}
       className="block overflow-hidden rounded border border-gray-800 bg-zinc-950 transition hover:scale-[1.02] hover:border-gray-600"
     >
@@ -31,6 +33,6 @@ export function MovieCard({ movie }: MovieCardProps) {
           {movie.description}
         </p>
       </div>
-    </a>
+    </Link>
   );
 }
