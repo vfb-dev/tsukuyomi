@@ -12,6 +12,7 @@ type DeleteMovieButtonProps = {
 export function DeleteMovieButton({ movieId }: DeleteMovieButtonProps) {
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   async function handleDelete() {
     const confirmed = window.confirm("Delete this movie?");
@@ -22,21 +23,30 @@ export function DeleteMovieButton({ movieId }: DeleteMovieButtonProps) {
 
     try {
       setIsDeleting(true);
+      setHasError(false);
+
       await deleteMovie(movieId);
+
       router.refresh();
+    } catch {
+      setHasError(true);
     } finally {
       setIsDeleting(false);
     }
   }
 
   return (
-    <button
-      type="button"
-      onClick={handleDelete}
-      disabled={isDeleting}
-      className="rounded border border-red-900 px-3 py-1 text-sm text-red-400 hover:border-red-600 hover:text-red-300 disabled:cursor-not-allowed disabled:border-gray-800 disabled:text-gray-500"
-    >
-      {isDeleting ? "Deleting..." : "Delete"}
-    </button>
+    <div className="flex items-center gap-2">
+      <button
+        type="button"
+        onClick={handleDelete}
+        disabled={isDeleting}
+        className="rounded border border-red-900 px-3 py-1 text-sm text-red-400 hover:border-red-600 hover:text-red-300 disabled:cursor-not-allowed disabled:border-gray-800 disabled:text-gray-500"
+      >
+        {isDeleting ? "Deleting..." : "Delete"}
+      </button>
+
+      {hasError && <span className="text-xs text-red-400">Failed</span>}
+    </div>
   );
 }
