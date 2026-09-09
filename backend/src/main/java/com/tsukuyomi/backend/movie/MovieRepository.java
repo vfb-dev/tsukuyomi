@@ -6,9 +6,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MovieRepository extends JpaRepository<Movie, Long> {
 
-    List<Movie> findByTitleContainingIgnoreCase(String title);
+    List<Movie> findByTitleContainingIgnoreCaseOrderByReleaseYearDesc(String title);
 
-    List<Movie> findByCategoryIgnoreCase(String category);
-    
-    List<Movie> findByTitleContainingIgnoreCaseAndCategoryIgnoreCase(String title, String category);
+    List<Movie> findByCategoryIgnoreCaseOrderByReleaseYearDesc(String category);
+
+    List<Movie> findByTitleContainingIgnoreCaseAndCategoryIgnoreCaseOrderByReleaseYearDesc(
+            String title,
+            String category
+    );
 }

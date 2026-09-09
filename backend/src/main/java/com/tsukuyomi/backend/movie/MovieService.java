@@ -21,11 +21,14 @@ public class MovieService {
         List<Movie> movies;
 
         if (hasSearch && hasCategory) {
-            movies = movieRepository.findByTitleContainingIgnoreCaseAndCategoryIgnoreCase(search, category);
+            movies = movieRepository.findByTitleContainingIgnoreCaseAndCategoryIgnoreCaseOrderByReleaseYearDesc(
+                    search,
+                    category
+            );
         } else if (hasSearch) {
-            movies = movieRepository.findByTitleContainingIgnoreCase(search);
+            movies = movieRepository.findByTitleContainingIgnoreCaseOrderByReleaseYearDesc(search);
         } else if (hasCategory) {
-            movies = movieRepository.findByCategoryIgnoreCase(category);
+            movies = movieRepository.findByCategoryIgnoreCaseOrderByReleaseYearDesc(category);
         } else {
             movies = movieRepository.findAll(Sort.by(Sort.Direction.DESC, "releaseYear"));
         }
