@@ -2,6 +2,7 @@ package com.tsukuyomi.backend.movie;
 
 import java.util.List;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -26,7 +27,7 @@ public class MovieService {
         } else if (hasCategory) {
             movies = movieRepository.findByCategoryIgnoreCase(category);
         } else {
-            movies = movieRepository.findAll();
+            movies = movieRepository.findAll(Sort.by(Sort.Direction.DESC, "releaseYear"));
         }
 
         return movies.stream()
