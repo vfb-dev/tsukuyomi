@@ -1,6 +1,8 @@
-import { Header } from "../components/Header";
-import { MovieCard } from "../components/MovieCard";
-import { getMovies } from "../lib/api";
+import Link from "next/link";
+
+import { Header } from "@/components/Header";
+import { MovieCard } from "@/components/MovieCard";
+import { getMovies } from "@/lib/api";
 
 type HomeProps = {
   searchParams: Promise<{
@@ -52,12 +54,12 @@ export default async function Home({ searchParams }: HomeProps) {
             </button>
 
             {hasFilters && (
-              <a
+              <Link
                 href="/"
                 className="rounded border border-gray-800 px-4 py-2 text-center text-sm font-semibold text-gray-300 hover:border-gray-600 hover:text-white"
               >
                 Clear
-              </a>
+              </Link>
             )}
           </form>
         </div>

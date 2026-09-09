@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { Header } from "@/components/Header";
 import { getMovie } from "@/lib/api";
 
@@ -9,16 +11,16 @@ type MoviePageProps = {
 
 export default async function MoviePage({ params }: MoviePageProps) {
   const { id } = await params;
-  const movie = await getMovie(id);
+  const movie = await getMovie(Number(id));
 
   return (
     <main className="min-h-screen bg-black text-white">
       <Header />
 
       <section className="px-8 py-10">
-        <a href="/" className="text-sm text-gray-400 hover:text-white">
+        <Link href="/" className="text-sm text-gray-400 hover:text-white">
           Back to movies
-        </a>
+        </Link>
 
         <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
           <div>
