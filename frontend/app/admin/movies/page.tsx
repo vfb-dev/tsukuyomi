@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { CreateMovieForm } from "../../../components/CreateMovieForm";
 import { DeleteMovieButton } from "../../../components/DeleteMovieButton";
 import { Header } from "../../../components/Header";
@@ -35,6 +37,7 @@ export default async function AdminMoviesPage() {
                     <th className="px-4 py-3 font-medium">Actions</th>
                   </tr>
                 </thead>
+
                 <tbody className="divide-y divide-gray-800">
                   {movies.map((movie) => (
                     <tr key={movie.id} className="bg-black">
@@ -51,7 +54,16 @@ export default async function AdminMoviesPage() {
                         {movie.durationMinutes} min
                       </td>
                       <td className="px-4 py-3">
-                        <DeleteMovieButton movieId={movie.id} />
+                        <div className="flex items-center gap-3">
+                          <Link
+                            href={`/admin/movies/${movie.id}/edit`}
+                            className="text-sm font-medium text-gray-300 hover:text-white"
+                          >
+                            Edit
+                          </Link>
+
+                          <DeleteMovieButton movieId={movie.id} />
+                        </div>
                       </td>
                     </tr>
                   ))}
