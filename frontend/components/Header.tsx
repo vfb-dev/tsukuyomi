@@ -12,7 +12,7 @@ export function Header() {
           Home
         </Link>
 
-        <Link href="/" className="hover:text-white">
+        <Link href="/movies" className="hover:text-white">
           Movies
         </Link>
 
