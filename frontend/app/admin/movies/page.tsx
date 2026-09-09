@@ -1,9 +1,9 @@
 import Link from "next/link";
 
-import { CreateMovieForm } from "../../../components/CreateMovieForm";
-import { DeleteMovieButton } from "../../../components/DeleteMovieButton";
-import { Header } from "../../../components/Header";
-import { getMovies } from "../../../lib/api";
+import { CreateMovieForm } from "@/components/CreateMovieForm";
+import { DeleteMovieButton } from "@/components/DeleteMovieButton";
+import { Header } from "@/components/Header";
+import { getMovies } from "@/lib/api";
 
 export default async function AdminMoviesPage() {
   const movies = await getMovies();
