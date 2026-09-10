@@ -14,13 +14,16 @@ public class MovieService {
         this.movieRepository = movieRepository;
     }
 
-    public List<MovieResponse> searchMovies(String search, String category) {
+    public List<MovieResponse> searchMovies(String search, String category, Boolean favorite) {
         boolean hasSearch = search != null && !search.isBlank();
         boolean hasCategory = category != null && !category.isBlank();
+        boolean onlyFavorites = Boolean.TRUE.equals(favorite);
 
         List<Movie> movies;
 
-        if (hasSearch && hasCategory) {
+        if (onlyFavorites) {
+            movies = movieRepository.findByFavoriteTrueOrderByReleaseYearDesc();
+        } else if (hasSearch && hasCategory) {
             movies = movieRepository.findByTitleContainingIgnoreCaseAndCategoryIgnoreCaseOrderByReleaseYearDesc(
                     search,
                     category

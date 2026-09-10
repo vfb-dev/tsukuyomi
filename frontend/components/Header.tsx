@@ -2,23 +2,25 @@ import Link from "next/link";
 
 export function Header() {
   return (
-    <header className="flex items-center justify-between border-b border-gray-900 px-8 py-5">
-      <Link href="/" className="text-2xl font-bold tracking-wide text-red-600">
-        Tsukuyomi
-      </Link>
-
-      <nav className="flex items-center gap-6 text-sm text-gray-400">
-        <Link href="/" className="hover:text-white">
-          Home
+    <header className="border-b border-gray-900 bg-black px-8 py-4 text-white">
+      <nav className="flex items-center justify-between">
+        <Link href="/" className="text-xl font-bold text-red-600">
+          Tsukuyomi
         </Link>
 
-        <Link href="/movies" className="hover:text-white">
-          Movies
-        </Link>
+        <div className="flex items-center gap-5 text-sm text-gray-300">
+          <Link href="/movies" className="hover:text-white">
+            Movies
+          </Link>
 
-        <Link href="/admin/movies" className="hover:text-white">
-          Admin
-        </Link>
+          <Link href="/favorites" className="hover:text-white">
+            Favorites
+          </Link>
+
+          <Link href="/admin/movies" className="hover:text-white">
+            Admin
+          </Link>
+        </div>
       </nav>
     </header>
   );

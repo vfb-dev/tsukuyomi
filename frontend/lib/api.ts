@@ -16,6 +16,7 @@ export type MovieInput = {
 type GetMoviesParams = {
   search?: string;
   category?: string;
+  favorite?: boolean;
 };
 
 export async function getMovies(
@@ -29,6 +30,10 @@ export async function getMovies(
 
   if (params.category) {
     searchParams.set("category", params.category);
+  }
+
+  if (params.favorite) {
+    searchParams.set("favorite", "true");
   }
 
   const queryString = searchParams.toString();

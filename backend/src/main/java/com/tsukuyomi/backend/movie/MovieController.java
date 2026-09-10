@@ -30,9 +30,10 @@ public class MovieController {
     @GetMapping
     public List<MovieResponse> getMovies(
             @RequestParam(required = false) String search,
-            @RequestParam(required = false) String category
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) Boolean favorite
     ) {
-        return movieService.searchMovies(search, category);
+        return movieService.searchMovies(search, category, favorite);
     }
 
     @GetMapping("/{id}")
