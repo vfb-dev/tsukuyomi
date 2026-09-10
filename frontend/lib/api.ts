@@ -1,4 +1,5 @@
 import { Movie } from "@/types/movie";
+import { WatchProgress, WatchProgressInput } from "@/types/watchProgress";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
@@ -123,4 +124,43 @@ export async function deleteMovie(id: number): Promise<void> {
   if (!response.ok) {
     throw new Error("Failed to delete movie");
   }
+}
+
+export async function getWatchProgress(
+  movieId: number,
+): Promise<WatchProgress> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/movies/${movieId}/progress`,
+    {
+      cache: "no-store",
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch watch progress");
+  }
+
+  return response.json();
+}
+
+export async function saveWatchProgress(
+  movieId: number,
+  progress: WatchProgressInput,
+): Promise<WatchProgress> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/movies/${movieId}/progress`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(progress),
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to save watch progress");
+  }
+
+  return response.json();
 }
