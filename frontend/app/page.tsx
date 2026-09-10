@@ -1,27 +1,10 @@
 import Link from "next/link";
 
 import { Header } from "@/components/Header";
-import { getContinueWatching, getMovie } from "@/lib/api";
+import { getContinueWatching } from "@/lib/api";
 
 export default async function HomePage() {
-  const progressList = await getContinueWatching();
-
-  const continueWatchingMovies = (
-    await Promise.all(
-      progressList.map(async (progress) => {
-        const movie = await getMovie(progress.movieId);
-
-        if (!movie) {
-          return null;
-        }
-
-        return {
-          movie,
-          progress,
-        };
-      }),
-    )
-  ).filter((item) => item !== null);
+  const continueWatchingItems = await getContinueWatching();
 
   return (
     <main className="min-h-screen bg-black text-white">
@@ -54,13 +37,13 @@ export default async function HomePage() {
       <section className="px-8 pb-12">
         <h2 className="text-2xl font-bold">Continue Watching</h2>
 
-        {continueWatchingMovies.length === 0 ? (
+        {continueWatchingItems.length === 0 ? (
           <p className="mt-4 text-sm text-zinc-500">
             Start watching a movie and it will appear here.
           </p>
         ) : (
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {continueWatchingMovies.map(({ movie, progress }) => {
+            {continueWatchingItems.map(({ movie, progress }) => {
               const progressMinutes = Math.floor(progress.progressSeconds / 60);
 
               return (

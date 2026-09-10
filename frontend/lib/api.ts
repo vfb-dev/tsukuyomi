@@ -1,5 +1,9 @@
 import { Movie } from "@/types/movie";
-import { WatchProgress, WatchProgressInput } from "@/types/watchProgress";
+import {
+  ContinueWatchingItem,
+  WatchProgress,
+  WatchProgressInput,
+} from "@/types/watchProgress";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
@@ -143,7 +147,7 @@ export async function getWatchProgress(
   return response.json();
 }
 
-export async function getContinueWatching(): Promise<WatchProgress[]> {
+export async function getContinueWatching(): Promise<ContinueWatchingItem[]> {
   const response = await fetch(`${API_BASE_URL}/api/watch-progress/continue`, {
     cache: "no-store",
   });

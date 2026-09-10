@@ -22,7 +22,7 @@ public class WatchProgressController {
     }
 
     @GetMapping("/watch-progress/continue")
-    public List<WatchProgressResponse> getContinueWatching() {
+    public List<ContinueWatchingResponse> getContinueWatching() {
         return watchProgressService.getContinueWatching();
     }
 

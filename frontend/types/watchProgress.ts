@@ -1,3 +1,5 @@
+import { Movie } from "@/types/movie";
+
 export type WatchProgress = {
   id: number | null;
   movieId: number;
@@ -8,4 +10,9 @@ export type WatchProgress = {
 export type WatchProgressInput = {
   progressSeconds: number;
   completed: boolean;
+};
+
+export type ContinueWatchingItem = {
+  movie: Movie;
+  progress: WatchProgress;
 };

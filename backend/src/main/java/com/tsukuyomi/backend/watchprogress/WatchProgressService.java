@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.tsukuyomi.backend.movie.Movie;
 import com.tsukuyomi.backend.movie.MovieNotFoundException;
 import com.tsukuyomi.backend.movie.MovieRepository;
+import com.tsukuyomi.backend.movie.MovieResponse;
 
 @Service
 public class WatchProgressService {
@@ -22,11 +23,14 @@ public class WatchProgressService {
         this.movieRepository = movieRepository;
     }
 
-    public List<WatchProgressResponse> getContinueWatching() {
+    public List<ContinueWatchingResponse> getContinueWatching() {
         return watchProgressRepository
                 .findByProgressSecondsGreaterThanOrderByIdDesc(0)
                 .stream()
-                .map(this::toResponse)
+                .map(progress -> new ContinueWatchingResponse(
+                        toMovieResponse(progress.getMovie()),
+                        toResponse(progress)
+                ))
                 .toList();
     }
 
@@ -69,6 +73,20 @@ public class WatchProgressService {
                 progress.getMovie().getId(),
                 progress.getProgressSeconds(),
                 progress.getCompleted()
+        );
+    }
+
+    private MovieResponse toMovieResponse(Movie movie) {
+        return new MovieResponse(
+                movie.getId(),
+                movie.getTitle(),
+                movie.getDescription(),
+                movie.getReleaseYear(),
+                movie.getDurationMinutes(),
+                movie.getPosterUrl(),
+                movie.getVideoUrl(),
+                movie.getCategory(),
+                movie.getFavorite()
         );
     }
 }
