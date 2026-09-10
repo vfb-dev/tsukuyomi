@@ -21,9 +21,17 @@ export function MovieCard({ movie }: MovieCardProps) {
       </div>
 
       <div className="p-4">
-        <span className="rounded bg-red-600 px-2 py-1 text-xs font-semibold text-white">
-          {movie.category}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="rounded bg-red-600 px-2 py-1 text-xs font-semibold text-white">
+            {movie.category}
+          </span>
+
+          {movie.favorite && (
+            <span className="rounded border border-yellow-500/50 px-2 py-1 text-xs font-semibold text-yellow-300">
+              Favorite
+            </span>
+          )}
+        </div>
 
         <h3 className="mt-3 font-semibold">{movie.title}</h3>
         <p className="mt-1 text-sm text-gray-400">

@@ -54,6 +54,7 @@ public class MovieService {
         movie.setPosterUrl(request.getPosterUrl());
         movie.setVideoUrl(request.getVideoUrl());
         movie.setCategory(request.getCategory());
+        movie.setFavorite(false);
 
         Movie savedMovie = movieRepository.save(movie);
 
@@ -70,6 +71,17 @@ public class MovieService {
         movie.setPosterUrl(request.getPosterUrl());
         movie.setVideoUrl(request.getVideoUrl());
         movie.setCategory(request.getCategory());
+
+        Movie updatedMovie = movieRepository.save(movie);
+
+        return toResponse(updatedMovie);
+    }
+
+    public MovieResponse toggleFavorite(Long id) {
+        Movie movie = findMovieById(id);
+        boolean currentFavorite = Boolean.TRUE.equals(movie.getFavorite());
+
+        movie.setFavorite(!currentFavorite);
 
         Movie updatedMovie = movieRepository.save(movie);
 
@@ -96,7 +108,8 @@ public class MovieService {
                 movie.getDurationMinutes(),
                 movie.getPosterUrl(),
                 movie.getVideoUrl(),
-                movie.getCategory()
+                movie.getCategory(),
+                movie.getFavorite()
         );
     }
 }

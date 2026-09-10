@@ -7,4 +7,5 @@ export type Movie = {
   posterUrl: string;
   videoUrl: string;
   category: string;
+  favorite: boolean | null;
 };

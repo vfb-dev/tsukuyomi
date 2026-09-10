@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { FavoriteButton } from "@/components/FavoriteButton";
 import { Header } from "@/components/Header";
 import { getMovie } from "@/lib/api";
 
@@ -36,9 +37,17 @@ export default async function MoviePage({ params }: MoviePageProps) {
             />
 
             <div className="mt-6">
-              <span className="rounded bg-red-600 px-2 py-1 text-xs font-semibold text-white">
-                {movie.category}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="rounded bg-red-600 px-2 py-1 text-xs font-semibold text-white">
+                  {movie.category}
+                </span>
+
+                {movie.favorite && (
+                  <span className="rounded border border-yellow-500/50 px-2 py-1 text-xs font-semibold text-yellow-300">
+                    Favorite
+                  </span>
+                )}
+              </div>
 
               <h1 className="mt-4 text-4xl font-bold">{movie.title}</h1>
               <p className="mt-3 text-gray-400">
@@ -47,6 +56,13 @@ export default async function MoviePage({ params }: MoviePageProps) {
               <p className="mt-6 max-w-3xl text-gray-200">
                 {movie.description}
               </p>
+
+              <div className="mt-6">
+                <FavoriteButton
+                  movieId={movie.id}
+                  initialFavorite={movie.favorite}
+                />
+              </div>
             </div>
           </div>
 

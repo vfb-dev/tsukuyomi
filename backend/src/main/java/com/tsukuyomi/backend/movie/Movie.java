@@ -19,6 +19,7 @@ public class Movie {
     private String posterUrl;
     private String videoUrl;
     private String category;
+    private Boolean favorite = false;
 
     public Movie() {
     }
@@ -85,5 +86,13 @@ public class Movie {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public Boolean getFavorite() {
+        return favorite;
+    }
+
+    public void setFavorite(Boolean favorite) {
+        this.favorite = favorite;
     }
 }

@@ -98,6 +98,18 @@ export async function updateMovie(
   return response.json();
 }
 
+export async function toggleMovieFavorite(id: number): Promise<Movie> {
+  const response = await fetch(`${API_BASE_URL}/api/movies/${id}/favorite`, {
+    method: "PATCH",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to toggle movie favorite");
+  }
+
+  return response.json();
+}
+
 export async function deleteMovie(id: number): Promise<void> {
   const response = await fetch(`${API_BASE_URL}/api/movies/${id}`, {
     method: "DELETE",

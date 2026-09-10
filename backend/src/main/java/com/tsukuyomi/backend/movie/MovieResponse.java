@@ -8,6 +8,7 @@ public record MovieResponse(
         Integer durationMinutes,
         String posterUrl,
         String videoUrl,
-        String category
+        String category,
+        Boolean favorite
 ) {
 }
