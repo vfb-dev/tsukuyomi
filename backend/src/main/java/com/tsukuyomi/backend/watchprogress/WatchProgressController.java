@@ -1,5 +1,7 @@
 package com.tsukuyomi.backend.watchprogress;
 
+import java.util.List;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/movies/{movieId}/progress")
+@RequestMapping("/api")
 public class WatchProgressController {
 
     private final WatchProgressService watchProgressService;
@@ -19,12 +21,17 @@ public class WatchProgressController {
         this.watchProgressService = watchProgressService;
     }
 
-    @GetMapping
+    @GetMapping("/watch-progress/continue")
+    public List<WatchProgressResponse> getContinueWatching() {
+        return watchProgressService.getContinueWatching();
+    }
+
+    @GetMapping("/movies/{movieId}/progress")
     public WatchProgressResponse getProgress(@PathVariable Long movieId) {
         return watchProgressService.getProgress(movieId);
     }
 
-    @PatchMapping
+    @PatchMapping("/movies/{movieId}/progress")
     public WatchProgressResponse saveProgress(
             @PathVariable Long movieId,
             @Valid @RequestBody WatchProgressRequest request

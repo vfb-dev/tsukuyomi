@@ -1,5 +1,7 @@
 package com.tsukuyomi.backend.watchprogress;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.tsukuyomi.backend.movie.Movie;
@@ -18,6 +20,14 @@ public class WatchProgressService {
     ) {
         this.watchProgressRepository = watchProgressRepository;
         this.movieRepository = movieRepository;
+    }
+
+    public List<WatchProgressResponse> getContinueWatching() {
+        return watchProgressRepository
+                .findByProgressSecondsGreaterThanOrderByIdDesc(0)
+                .stream()
+                .map(this::toResponse)
+                .toList();
     }
 
     public WatchProgressResponse getProgress(Long movieId) {
