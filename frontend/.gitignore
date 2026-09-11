@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Local media files
+/public/media/videos/*
+/public/media/posters/*
+!/public/media/videos/.gitkeep
+!/public/media/posters/.gitkeep
