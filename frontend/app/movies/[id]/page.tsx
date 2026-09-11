@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { Header } from "@/components/Header";
 import { VideoPlayer } from "@/components/VideoPlayer";
+import { PosterImage } from "@/components/PosterImage";
 import { getMovie, getWatchProgress } from "@/lib/api";
 
 type MovieDetailsPageProps = {
@@ -38,7 +39,7 @@ export default async function MovieDetailsPage({
         </Link>
 
         <div className="mt-8 grid gap-8 lg:grid-cols-[280px_1fr]">
-          <img
+          <PosterImage
             src={movie.posterUrl}
             alt={movie.title}
             className="aspect-[2/3] w-full rounded object-cover"

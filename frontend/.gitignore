@@ -45,3 +45,4 @@ next-env.d.ts
 /public/media/posters/*
 !/public/media/videos/.gitkeep
 !/public/media/posters/.gitkeep
+!/public/media/posters/placeholder.svg

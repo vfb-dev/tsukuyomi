@@ -2,6 +2,8 @@ import Link from "next/link";
 
 import { ContinueWatchingItem } from "@/types/watchProgress";
 
+import { PosterImage } from "@/components/PosterImage";
+
 type HomeMovieRowProps = {
   title: string;
   emptyMessage: string;
@@ -36,7 +38,7 @@ export function HomeMovieRow({
                 href={`/movies/${movie.id}`}
                 className="group overflow-hidden rounded border border-zinc-900 bg-zinc-950 hover:border-zinc-700"
               >
-                <img
+                <PosterImage
                   src={movie.posterUrl}
                   alt={movie.title}
                   className={`aspect-[2/3] w-full object-cover transition group-hover:scale-105 ${posterOpacity}`}

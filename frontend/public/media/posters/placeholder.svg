@@ -1,0 +1,10 @@
+<svg width="400" height="600" viewBox="0 0 400 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="600" fill="#18181B"/>
+  <rect x="32" y="32" width="336" height="536" rx="12" fill="#09090B" stroke="#3F3F46"/>
+  <text x="200" y="286" text-anchor="middle" fill="#A1A1AA" font-family="Arial, sans-serif" font-size="28" font-weight="700">
+    Tsukuyomi
+  </text>
+  <text x="200" y="326" text-anchor="middle" fill="#71717A" font-family="Arial, sans-serif" font-size="18">
+    No poster
+  </text>
+</svg>
