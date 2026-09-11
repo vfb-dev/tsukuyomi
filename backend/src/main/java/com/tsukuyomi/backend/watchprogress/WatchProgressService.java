@@ -34,6 +34,17 @@ public class WatchProgressService {
                 .toList();
     }
 
+    public List<ContinueWatchingResponse> getCompletedWatching() {
+    return watchProgressRepository
+            .findByCompletedTrueOrderByIdDesc()
+            .stream()
+            .map(progress -> new ContinueWatchingResponse(
+                    toMovieResponse(progress.getMovie()),
+                    toResponse(progress)
+            ))
+            .toList();
+}
+
     public WatchProgressResponse getProgress(Long movieId) {
         WatchProgress progress = watchProgressRepository
                 .findByMovieId(movieId)

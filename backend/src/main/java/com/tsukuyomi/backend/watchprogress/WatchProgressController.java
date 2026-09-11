@@ -26,6 +26,11 @@ public class WatchProgressController {
         return watchProgressService.getContinueWatching();
     }
 
+    @GetMapping("/watch-progress/completed")
+    public List<ContinueWatchingResponse> getCompletedWatching() {
+        return watchProgressService.getCompletedWatching();
+    }
+
     @GetMapping("/movies/{movieId}/progress")
     public WatchProgressResponse getProgress(@PathVariable Long movieId) {
         return watchProgressService.getProgress(movieId);
