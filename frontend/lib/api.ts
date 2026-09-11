@@ -159,6 +159,18 @@ export async function getContinueWatching(): Promise<ContinueWatchingItem[]> {
   return response.json();
 }
 
+export async function getCompletedWatching(): Promise<ContinueWatchingItem[]> {
+  const response = await fetch(`${API_BASE_URL}/api/watch-progress/completed`, {
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch completed watching");
+  }
+
+  return response.json();
+}
+
 export async function saveWatchProgress(
   movieId: number,
   progress: WatchProgressInput,

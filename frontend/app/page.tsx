@@ -1,10 +1,11 @@
 import Link from "next/link";
 
 import { Header } from "@/components/Header";
-import { getContinueWatching } from "@/lib/api";
+import { getCompletedWatching, getContinueWatching } from "@/lib/api";
 
 export default async function HomePage() {
   const continueWatchingItems = await getContinueWatching();
+  const completedWatchingItems = await getCompletedWatching();
 
   return (
     <main className="min-h-screen bg-black text-white">
@@ -68,6 +69,38 @@ export default async function HomePage() {
                 </Link>
               );
             })}
+          </div>
+        )}
+      </section>
+
+      <section className="px-8 pb-12">
+        <h2 className="text-2xl font-bold">Completed</h2>
+
+        {completedWatchingItems.length === 0 ? (
+          <p className="mt-4 text-sm text-zinc-500">
+            Completed movies will appear here.
+          </p>
+        ) : (
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {completedWatchingItems.map(({ movie }) => (
+              <Link
+                key={movie.id}
+                href={`/movies/${movie.id}`}
+                className="group overflow-hidden rounded border border-zinc-900 bg-zinc-950 hover:border-zinc-700"
+              >
+                <img
+                  src={movie.posterUrl}
+                  alt={movie.title}
+                  className="aspect-[2/3] w-full object-cover opacity-80 transition group-hover:scale-105 group-hover:opacity-100"
+                />
+
+                <div className="p-4">
+                  <h3 className="font-semibold text-white">{movie.title}</h3>
+
+                  <p className="mt-1 text-sm text-green-500">Completed</p>
+                </div>
+              </Link>
+            ))}
           </div>
         )}
       </section>
