@@ -27,21 +27,29 @@ export function VideoPlayer({
     event.currentTarget.currentTime = initialProgressSeconds;
   }
 
-  async function handlePause(event: React.SyntheticEvent<HTMLVideoElement>) {
-    const video = event.currentTarget;
-
+  async function saveProgress(video: HTMLVideoElement, completed: boolean) {
     try {
       setSaveStatus("saving");
 
       await saveWatchProgress(movieId, {
         progressSeconds: Math.floor(video.currentTime),
-        completed: video.ended,
+        completed,
       });
 
       setSaveStatus("saved");
     } catch {
       setSaveStatus("error");
     }
+  }
+
+  async function handlePause(event: React.SyntheticEvent<HTMLVideoElement>) {
+    const video = event.currentTarget;
+
+    await saveProgress(video, video.ended);
+  }
+
+  async function handleEnded(event: React.SyntheticEvent<HTMLVideoElement>) {
+    await saveProgress(event.currentTarget, true);
   }
 
   return (
@@ -51,6 +59,7 @@ export function VideoPlayer({
         controls
         onLoadedMetadata={handleLoadedMetadata}
         onPause={handlePause}
+        onEnded={handleEnded}
         className="aspect-video w-full rounded bg-zinc-950"
       />
 
