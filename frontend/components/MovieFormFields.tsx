@@ -103,11 +103,14 @@ export function MovieFormFields({ defaultValues }: MovieFormFieldsProps) {
         <input
           id="posterUrl"
           name="posterUrl"
-          type="url"
+          type="text"
           required
           defaultValue={defaultValues?.posterUrl}
           className="rounded border border-gray-800 bg-black px-3 py-2 text-sm text-white outline-none focus:border-red-600"
         />
+        <p className="mt-1 text-xs text-zinc-500">
+          Local posters can use /media/posters/example.jpg
+        </p>
       </div>
 
       <div className="grid gap-2">
@@ -117,11 +120,14 @@ export function MovieFormFields({ defaultValues }: MovieFormFieldsProps) {
         <input
           id="videoUrl"
           name="videoUrl"
-          type="url"
+          type="text"
           required
           defaultValue={defaultValues?.videoUrl}
           className="rounded border border-gray-800 bg-black px-3 py-2 text-sm text-white outline-none focus:border-red-600"
         />
+        <p className="mt-1 text-xs text-zinc-500">
+          Local videos can use /media/videos/example.mp4
+        </p>
       </div>
     </>
   );
