@@ -25,7 +25,7 @@ public class WatchProgressService {
 
     public List<ContinueWatchingResponse> getContinueWatching() {
         return watchProgressRepository
-                .findByProgressSecondsGreaterThanOrderByIdDesc(0)
+                .findByProgressSecondsGreaterThanAndCompletedFalseOrderByIdDesc(0)
                 .stream()
                 .map(progress -> new ContinueWatchingResponse(
                         toMovieResponse(progress.getMovie()),

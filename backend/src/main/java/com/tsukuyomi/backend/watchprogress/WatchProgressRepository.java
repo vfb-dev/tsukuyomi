@@ -10,4 +10,6 @@ public interface WatchProgressRepository extends JpaRepository<WatchProgress, Lo
     Optional<WatchProgress> findByMovieId(Long movieId);
 
     List<WatchProgress> findByProgressSecondsGreaterThanOrderByIdDesc(Integer progressSeconds);
+
+    List<WatchProgress> findByProgressSecondsGreaterThanAndCompletedFalseOrderByIdDesc(Integer progressSeconds);
 }
