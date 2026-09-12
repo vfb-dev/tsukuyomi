@@ -3,6 +3,7 @@ import Link from "next/link";
 import { CreateMovieForm } from "@/components/CreateMovieForm";
 import { DeleteMovieButton } from "@/components/DeleteMovieButton";
 import { Header } from "@/components/Header";
+import { LogoutButton } from "@/components/LogoutButton";
 import { getMovies } from "@/lib/api";
 
 export default async function AdminMoviesPage() {
@@ -13,10 +14,16 @@ export default async function AdminMoviesPage() {
       <Header />
 
       <section className="px-8 py-10">
-        <h1 className="text-3xl font-bold">Admin Movies</h1>
-        <p className="mt-2 text-sm text-gray-400">
-          Create and manage movies in your catalog.
-        </p>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold">Admin Movies</h1>
+            <p className="mt-2 text-sm text-gray-400">
+              Create and manage movies in your catalog.
+            </p>
+          </div>
+
+          <LogoutButton />
+        </div>
 
         <CreateMovieForm />
 

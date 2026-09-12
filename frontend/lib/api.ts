@@ -1,3 +1,5 @@
+import { getAuthToken } from "@/lib/auth";
+import { AuthUser, LoginInput, LoginResponse } from "@/types/auth";
 import { Movie } from "@/types/movie";
 import {
   ContinueWatchingItem,
@@ -7,6 +9,18 @@ import {
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
+
+function getAuthHeaders() {
+  const token = getAuthToken();
+
+  if (!token) {
+    throw new Error("You must be logged in.");
+  }
+
+  return {
+    Authorization: `Bearer ${token}`,
+  };
+}
 
 export type MovieInput = {
   title: string;
@@ -78,6 +92,7 @@ export async function createMovie(movie: MovieInput): Promise<Movie> {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      ...getAuthHeaders(),
     },
     body: JSON.stringify(movie),
   });
@@ -97,6 +112,7 @@ export async function updateMovie(
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
+      ...getAuthHeaders(),
     },
     body: JSON.stringify(movie),
   });
@@ -111,6 +127,9 @@ export async function updateMovie(
 export async function toggleMovieFavorite(id: number): Promise<Movie> {
   const response = await fetch(`${API_BASE_URL}/api/movies/${id}/favorite`, {
     method: "PATCH",
+    headers: {
+      ...getAuthHeaders(),
+    },
   });
 
   if (!response.ok) {
@@ -123,6 +142,9 @@ export async function toggleMovieFavorite(id: number): Promise<Movie> {
 export async function deleteMovie(id: number): Promise<void> {
   const response = await fetch(`${API_BASE_URL}/api/movies/${id}`, {
     method: "DELETE",
+    headers: {
+      ...getAuthHeaders(),
+    },
   });
 
   if (!response.ok) {
@@ -181,6 +203,7 @@ export async function saveWatchProgress(
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
+        ...getAuthHeaders(),
       },
       body: JSON.stringify(progress),
     },
@@ -188,6 +211,36 @@ export async function saveWatchProgress(
 
   if (!response.ok) {
     throw new Error("Failed to save watch progress");
+  }
+
+  return response.json();
+}
+
+export async function login(input: LoginInput): Promise<LoginResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(input),
+  });
+
+  if (!response.ok) {
+    throw new Error("Invalid username or password.");
+  }
+
+  return response.json();
+}
+
+export async function getCurrentUser(token: string): Promise<AuthUser> {
+  const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Could not load current user.");
   }
 
   return response.json();
