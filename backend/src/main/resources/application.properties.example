@@ -4,3 +4,8 @@ spring.datasource.password=your_password_here
 
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
+
+app.auth.username=admin
+app.auth.password=change-me
+app.auth.jwt-secret=change-this-to-a-long-random-secret
+app.auth.jwt-expiration-minutes=1440
