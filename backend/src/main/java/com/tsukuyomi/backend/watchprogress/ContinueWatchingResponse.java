@@ -1,17 +1,21 @@
 package com.tsukuyomi.backend.watchprogress;
 
+import com.tsukuyomi.backend.episode.EpisodeResponse;
 import com.tsukuyomi.backend.movie.MovieResponse;
 
 public class ContinueWatchingResponse {
 
     private MovieResponse movie;
-    private WatchProgressResponse progress;
+    private EpisodeResponse episode;
+    private ContinueWatchingProgressResponse progress;
 
     public ContinueWatchingResponse(
             MovieResponse movie,
-            WatchProgressResponse progress
+            EpisodeResponse episode,
+            ContinueWatchingProgressResponse progress
     ) {
         this.movie = movie;
+        this.episode = episode;
         this.progress = progress;
     }
 
@@ -19,7 +23,11 @@ public class ContinueWatchingResponse {
         return movie;
     }
 
-    public WatchProgressResponse getProgress() {
+    public EpisodeResponse getEpisode() {
+        return episode;
+    }
+
+    public ContinueWatchingProgressResponse getProgress() {
         return progress;
     }
 }

@@ -25,8 +25,18 @@ export function HomeMovieRow({
         <p className="mt-4 text-sm text-zinc-500">{emptyMessage}</p>
       ) : (
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {items.map(({ movie, progress }) => {
+          {items.map(({ movie, episode, progress }) => {
             const progressMinutes = Math.floor(progress.progressSeconds / 60);
+            const itemTitle = episode ? movie.title : movie.title;
+            const itemSubtitle = episode
+              ? `S${episode.seasonNumber} E${episode.episodeNumber}: ${episode.title}`
+              : null;
+            const itemHref = episode
+              ? `/movies/${movie.id}?episode=${episode.id}`
+              : `/movies/${movie.id}`;
+            const itemKey = episode
+              ? `${movie.id}-episode-${episode.id}`
+              : `${movie.id}-movie`;
             const posterOpacity =
               variant === "completed"
                 ? "opacity-80 group-hover:opacity-100"
@@ -34,8 +44,8 @@ export function HomeMovieRow({
 
             return (
               <Link
-                key={movie.id}
-                href={`/movies/${movie.id}`}
+                key={itemKey}
+                href={itemHref}
                 className="group overflow-hidden rounded border border-zinc-900 bg-zinc-950 hover:border-zinc-700"
               >
                 <PosterImage
@@ -45,7 +55,13 @@ export function HomeMovieRow({
                 />
 
                 <div className="p-4">
-                  <h3 className="font-semibold text-white">{movie.title}</h3>
+                  <h3 className="font-semibold text-white">{itemTitle}</h3>
+
+                  {itemSubtitle && (
+                    <p className="mt-1 text-sm text-zinc-400">
+                      {itemSubtitle}
+                    </p>
+                  )}
 
                   {variant === "progress" ? (
                     <p className="mt-1 text-sm text-zinc-500">

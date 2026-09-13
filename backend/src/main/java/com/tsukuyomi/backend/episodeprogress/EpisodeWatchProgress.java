@@ -1,5 +1,7 @@
 package com.tsukuyomi.backend.episodeprogress;
 
+import java.time.LocalDateTime;
+
 import com.tsukuyomi.backend.episode.Episode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,6 +23,7 @@ public class EpisodeWatchProgress {
 
     private Integer progressSeconds = 0;
     private Boolean completed = false;
+    private LocalDateTime updatedAt;
 
     public Long getId() {
         return id;
@@ -48,5 +51,13 @@ public class EpisodeWatchProgress {
 
     public void setCompleted(Boolean completed) {
         this.completed = completed;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

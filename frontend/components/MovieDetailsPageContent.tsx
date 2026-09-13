@@ -23,10 +23,12 @@ import {
 
 type MovieDetailsPageContentProps = {
   movieId: number;
+  initialEpisodeId?: number | null;
 };
 
 export function MovieDetailsPageContent({
   movieId,
+  initialEpisodeId = null,
 }: MovieDetailsPageContentProps) {
   const [movie, setMovie] = useState<Movie | null>(null);
   const [progress, setProgress] = useState<WatchProgress | null>(null);
@@ -75,7 +77,17 @@ export function MovieDetailsPageContent({
         setProgress(loadedProgress);
         setEpisodes(loadedEpisodes);
         setEpisodeProgressById(loadedEpisodeProgressById);
-        setSelectedEpisodeId(isAnime ? (loadedEpisodes[0]?.id ?? null) : null);
+        const requestedEpisodeExists = loadedEpisodes.some(
+          (episode) => episode.id === initialEpisodeId,
+        );
+        const selectedEpisodeIdFromUrl =
+          initialEpisodeId && requestedEpisodeExists ? initialEpisodeId : null;
+
+        setSelectedEpisodeId(
+          isAnime
+            ? (selectedEpisodeIdFromUrl ?? loadedEpisodes[0]?.id ?? null)
+            : null,
+        );
       } catch {
         setHasError(true);
       } finally {
@@ -84,7 +96,7 @@ export function MovieDetailsPageContent({
     }
 
     loadDetails();
-  }, [movieId]);
+  }, [movieId, initialEpisodeId]);
 
   if (isLoading) {
     return (

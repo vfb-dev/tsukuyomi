@@ -1,5 +1,7 @@
 package com.tsukuyomi.backend.episodeprogress;
 
+import java.time.LocalDateTime;
+
 import org.springframework.stereotype.Service;
 
 import com.tsukuyomi.backend.episode.Episode;
@@ -49,6 +51,7 @@ public class EpisodeWatchProgressService {
         progress.setEpisode(episode);
         progress.setProgressSeconds(request.getProgressSeconds());
         progress.setCompleted(request.getCompleted());
+        progress.setUpdatedAt(LocalDateTime.now());
 
         EpisodeWatchProgress savedProgress = episodeWatchProgressRepository.save(progress);
 

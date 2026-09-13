@@ -1,5 +1,7 @@
 package com.tsukuyomi.backend.watchprogress;
 
+import java.time.LocalDateTime;
+
 import com.tsukuyomi.backend.movie.Movie;
 
 import jakarta.persistence.Entity;
@@ -23,6 +25,7 @@ public class WatchProgress {
     private Integer progressSeconds;
 
     private Boolean completed = false;
+    private LocalDateTime updatedAt;
 
     public Long getId() {
         return id;
@@ -50,5 +53,13 @@ public class WatchProgress {
 
     public void setCompleted(Boolean completed) {
         this.completed = completed;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
