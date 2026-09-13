@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { HomeCatalogRow } from "@/components/HomeCatalogRow";
 import { HomeMovieRow } from "@/components/HomeMovieRow";
@@ -15,6 +16,7 @@ export function HomePageContent() {
     ContinueWatchingItem[]
   >([]);
   const [movies, setMovies] = useState<Movie[]>([]);
+  const [featuredIndex, setFeaturedIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
@@ -38,10 +40,32 @@ export function HomePageContent() {
     loadRows();
   }, []);
 
-  const featuredMovie = movies[0] ?? null;
+  useEffect(() => {
+    if (movies.length < 2) {
+      return;
+    }
+
+    const intervalId = window.setInterval(() => {
+      setFeaturedIndex((currentIndex) => (currentIndex + 1) % movies.length);
+    }, 60000);
+
+    return () => window.clearInterval(intervalId);
+  }, [movies.length]);
+
+  const featuredMovie = movies[featuredIndex] ?? movies[0] ?? null;
   const animeMovies = movies.filter((movie) => movie.mediaType === "ANIME");
   const filmMovies = movies.filter((movie) => movie.mediaType !== "ANIME");
   const hasMultipleMediaTypes = animeMovies.length > 0 && filmMovies.length > 0;
+
+  function showPreviousFeatured() {
+    setFeaturedIndex((currentIndex) =>
+      currentIndex === 0 ? movies.length - 1 : currentIndex - 1,
+    );
+  }
+
+  function showNextFeatured() {
+    setFeaturedIndex((currentIndex) => (currentIndex + 1) % movies.length);
+  }
 
   return (
     <>
@@ -49,38 +73,61 @@ export function HomePageContent() {
         {featuredMovie && (
           <div className="absolute inset-0 z-0">
             <PosterImage
+              key={featuredMovie.id}
               src={featuredMovie.posterUrl}
               alt=""
-              className="h-full w-full object-cover object-center opacity-30"
+              className="h-full w-full object-cover object-center sm:object-[70%_center]"
             />
-            <div className="absolute inset-0 bg-black/65" />
           </div>
         )}
 
-        <div className="relative z-10 mx-auto flex min-h-[30rem] max-w-7xl items-end px-6 py-12 sm:min-h-[34rem] sm:px-10 sm:py-16">
-          <div className="max-w-2xl">
-            <p className="text-xs font-semibold tracking-[0.22em] text-red-400 uppercase">
-              Your personal library
-            </p>
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-t from-black/45 via-transparent to-transparent sm:inset-y-0 sm:right-auto sm:w-2/3 sm:bg-gradient-to-r sm:from-black/60 sm:via-black/30 sm:to-transparent"
+        />
 
-            <h1 className="mt-4 text-4xl font-bold tracking-tight text-white sm:text-6xl">
+        {movies.length > 1 && (
+          <>
+            <button
+              type="button"
+              onClick={showPreviousFeatured}
+              aria-label="Show previous featured title"
+              className="absolute left-2 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-zinc-700 bg-black/40 text-zinc-200 transition hover:border-zinc-300 hover:text-white"
+            >
+              <ChevronLeft aria-hidden="true" className="h-5 w-5" />
+            </button>
+
+            <button
+              type="button"
+              onClick={showNextFeatured}
+              aria-label="Show next featured title"
+              className="absolute right-2 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-zinc-700 bg-black/40 text-zinc-200 transition hover:border-zinc-300 hover:text-white"
+            >
+              <ChevronRight aria-hidden="true" className="h-5 w-5" />
+            </button>
+          </>
+        )}
+
+        <div className="relative z-10 mx-auto flex min-h-[30rem] max-w-7xl items-end px-6 py-12 pl-14 sm:min-h-[34rem] sm:px-10 sm:py-16 sm:pl-14">
+          <div className="max-w-2xl">
+            <h1 className="bg-gradient-to-r from-white via-red-100 to-red-400 bg-clip-text text-4xl font-bold tracking-tight text-transparent sm:text-6xl">
               {featuredMovie?.title ?? "Your next favorite watch"}
             </h1>
 
             {featuredMovie ? (
               <>
-                <p className="mt-4 text-sm font-medium text-zinc-300">
+                <p className="mt-4 text-sm font-medium text-white/90 [text-shadow:0_1px_3px_rgba(0,0,0,0.9)]">
                   {featuredMovie.releaseYear} · {" "}
                   {featuredMovie.mediaType === "ANIME" ? "Anime" : "Movie"} · {" "}
                   {featuredMovie.category}
                 </p>
 
-                <p className="mt-4 max-w-xl text-sm leading-6 text-zinc-300 sm:text-base">
+                <p className="mt-4 max-w-xl text-sm leading-6 text-white/90 [text-shadow:0_1px_3px_rgba(0,0,0,0.9)] sm:text-base">
                   {featuredMovie.description}
                 </p>
               </>
             ) : (
-              <p className="mt-4 max-w-xl text-sm leading-6 text-zinc-400 sm:text-base">
+              <p className="mt-4 max-w-xl text-sm leading-6 text-white/80 [text-shadow:0_1px_3px_rgba(0,0,0,0.9)] sm:text-base">
                 A quiet place for the movies and anime you want to keep close.
                 Add your first title from the catalog to get started.
               </p>
@@ -105,12 +152,37 @@ export function HomePageContent() {
             </div>
 
             {movies.length > 0 && (
-              <div className="mt-8 flex flex-wrap gap-x-5 gap-y-2 text-xs text-zinc-400">
+              <div className="mt-8 flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium text-white/80 [text-shadow:0_1px_3px_rgba(0,0,0,0.9)]">
                 <span>{movies.length} titles</span>
                 {animeMovies.length > 0 && <span>{animeMovies.length} anime</span>}
                 {filmMovies.length > 0 && <span>{filmMovies.length} movies</span>}
               </div>
             )}
+
+            {movies.length > 1 && (
+              <div
+                className="mt-8 flex items-center gap-1.5"
+                aria-label="Featured title navigation"
+              >
+                {movies.map((movie, index) => (
+                  <button
+                    key={movie.id}
+                    type="button"
+                    onClick={() => setFeaturedIndex(index)}
+                    aria-label={`Show ${movie.title}`}
+                    aria-current={
+                      index === featuredIndex ? "true" : undefined
+                    }
+                    className={`h-1.5 rounded-full transition-all ${
+                      index === featuredIndex
+                        ? "w-6 bg-red-500"
+                        : "w-1.5 bg-zinc-600 hover:bg-zinc-300"
+                    }`}
+                  />
+                ))}
+              </div>
+            )}
+
           </div>
         </div>
       </section>
