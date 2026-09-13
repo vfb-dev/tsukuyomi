@@ -3,6 +3,7 @@ package com.tsukuyomi.backend.user;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,7 +38,7 @@ public class AppUserController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(@PathVariable Long id) {
-        appUserService.deleteUser(id);
+    public void deleteUser(@PathVariable Long id, Authentication authentication) {
+        appUserService.deleteUser(id, authentication.getName());
     }
 }

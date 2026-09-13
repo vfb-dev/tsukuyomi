@@ -15,6 +15,8 @@ import com.tsukuyomi.backend.watchprogress.WatchProgressRepository;
 @Service
 public class AppUserService {
 
+    private static final String ADMIN_ROLE = "ADMIN";
+
     private final AppUserRepository appUserRepository;
     private final PasswordEncoder passwordEncoder;
     private final FavoriteRepository favoriteRepository;
@@ -59,9 +61,17 @@ public class AppUserService {
     }
 
     @Transactional
-    public void deleteUser(Long id) {
+    public void deleteUser(Long id, String currentUsername) {
         AppUser user = appUserRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        if (user.getUsername().equals(currentUsername)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You cannot delete your own account");
+        }
+
+        if (ADMIN_ROLE.equals(user.getRole()) && appUserRepository.countByRole(ADMIN_ROLE) <= 1) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You cannot delete the last admin account");
+        }
 
         favoriteRepository.deleteAll(favoriteRepository.findByUserId(id));
         watchProgressRepository.deleteAll(watchProgressRepository.findByUserId(id));
