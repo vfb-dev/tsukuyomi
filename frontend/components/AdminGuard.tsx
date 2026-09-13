@@ -23,7 +23,13 @@ export function AdminGuard({ children }: AdminGuardProps) {
       }
 
       try {
-        await getCurrentUser(token);
+        const user = await getCurrentUser(token);
+
+        if (user.role !== "ADMIN") {
+          router.replace("/");
+          return;
+        }
+
         setIsCheckingAuth(false);
       } catch {
         removeAuthToken();

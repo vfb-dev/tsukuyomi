@@ -26,6 +26,12 @@ public class AuthController {
 
     @GetMapping("/me")
     public AuthUserResponse me(Authentication authentication) {
-        return new AuthUserResponse(authentication.getName());
+        String role = authentication.getAuthorities()
+                .stream()
+                .findFirst()
+                .map(authority -> authority.getAuthority().replace("ROLE_", ""))
+                .orElse("USER");
+
+        return new AuthUserResponse(authentication.getName(), role);
     }
 }

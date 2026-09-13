@@ -24,7 +24,7 @@ export function LoginForm() {
 
       saveAuthToken(response.token);
 
-      router.push("/admin/movies");
+      router.push(response.user.role === "ADMIN" ? "/admin/movies" : "/");
       router.refresh();
     } catch (error) {
       setError(error instanceof Error ? error.message : "Could not log in.");

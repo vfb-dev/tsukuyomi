@@ -22,12 +22,13 @@ public class JwtService {
         this.authProperties = authProperties;
     }
 
-    public String createToken(String username) {
+    public String createToken(String username, String role) {
         Instant now = Instant.now();
         Instant expiration = now.plus(authProperties.getJwtExpirationMinutes(), ChronoUnit.MINUTES);
 
         return Jwts.builder()
                 .subject(username)
+                .claim("role", role)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(expiration))
                 .signWith(getSigningKey())
@@ -35,13 +36,11 @@ public class JwtService {
     }
 
     public String getUsernameFromToken(String token) {
-        Claims claims = Jwts.parser()
-                .verifyWith(getSigningKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        return getClaims(token).getSubject();
+    }
 
-        return claims.getSubject();
+    public String getRoleFromToken(String token) {
+        return getClaims(token).get("role", String.class);
     }
 
     public boolean isTokenValid(String token) {
@@ -56,5 +55,13 @@ public class JwtService {
     private SecretKey getSigningKey() {
         byte[] secretBytes = authProperties.getJwtSecret().getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(secretBytes);
+    }
+
+    private Claims getClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 }

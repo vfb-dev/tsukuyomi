@@ -6,6 +6,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -29,20 +31,26 @@ public class SecurityConfig {
                                 "/api/health",
                                 "/api/auth/login"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/movies/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/watch-progress/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/api/movies/*/progress").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/api/movies/*/episodes/*/progress").hasRole("ADMIN")
+                        .requestMatchers("/api/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/movies/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.GET, "/api/watch-progress/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.PATCH, "/api/movies/*/progress").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.PATCH, "/api/movies/*/episodes/*/progress").hasAnyRole("ADMIN", "USER")
                         .requestMatchers(HttpMethod.POST, "/api/movies").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/movies/*/episodes").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/movies/*").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/movies/*/episodes/*").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/movies/*").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/movies/*/episodes/*").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/api/movies/*/favorite").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/movies/*/favorite").hasAnyRole("ADMIN", "USER")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }

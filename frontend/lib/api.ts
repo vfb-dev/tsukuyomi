@@ -1,5 +1,11 @@
 import { getAuthToken } from "@/lib/auth";
-import { AuthUser, LoginInput, LoginResponse } from "@/types/auth";
+import {
+  AppUser,
+  AppUserInput,
+  AuthUser,
+  LoginInput,
+  LoginResponse,
+} from "@/types/auth";
 import { Episode, EpisodeInput } from "@/types/episode";
 import { Movie, MovieInput } from "@/types/movie";
 import {
@@ -395,4 +401,49 @@ export async function getCurrentUser(token: string): Promise<AuthUser> {
   }
 
   return response.json();
+}
+
+export async function getUsers(): Promise<AppUser[]> {
+  const response = await fetch(`${API_BASE_URL}/api/users`, {
+    cache: "no-store",
+    headers: {
+      ...getAuthHeaders(),
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch users");
+  }
+
+  return response.json();
+}
+
+export async function createUser(user: AppUserInput): Promise<AppUser> {
+  const response = await fetch(`${API_BASE_URL}/api/users`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeaders(),
+    },
+    body: JSON.stringify(user),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to create user");
+  }
+
+  return response.json();
+}
+
+export async function deleteUser(id: number): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/api/users/${id}`, {
+    method: "DELETE",
+    headers: {
+      ...getAuthHeaders(),
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to delete user");
+  }
 }
