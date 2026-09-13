@@ -54,7 +54,10 @@ public class WatchProgressService {
                 .forEach(candidates::add);
 
         episodeWatchProgressRepository
-                .findByProgressSecondsGreaterThanAndCompletedFalseOrderByIdDesc(0)
+                .findByUserUsernameAndProgressSecondsGreaterThanAndCompletedFalseOrderByUpdatedAtDescIdDesc(
+                        username,
+                        0
+                )
                 .stream()
                 .map(progress -> new ContinueWatchingCandidate(
                         toContinueWatchingResponse(progress),
@@ -79,7 +82,7 @@ public class WatchProgressService {
                 .toList();
 
         List<ContinueWatchingResponse> episodeItems = episodeWatchProgressRepository
-                .findByCompletedTrueOrderByIdDesc()
+                .findByUserUsernameAndCompletedTrueOrderByUpdatedAtDescIdDesc(username)
                 .stream()
                 .map(this::toContinueWatchingResponse)
                 .toList();

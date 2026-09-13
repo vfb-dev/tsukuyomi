@@ -3,12 +3,14 @@ package com.tsukuyomi.backend.episodeprogress;
 import java.time.LocalDateTime;
 
 import com.tsukuyomi.backend.episode.Episode;
+import com.tsukuyomi.backend.user.AppUser;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class EpisodeWatchProgress {
@@ -17,8 +19,12 @@ public class EpisodeWatchProgress {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "episode_id", nullable = false, unique = true)
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private AppUser user;
+
+    @ManyToOne
+    @JoinColumn(name = "episode_id", nullable = false)
     private Episode episode;
 
     private Integer progressSeconds = 0;
@@ -27,6 +33,14 @@ public class EpisodeWatchProgress {
 
     public Long getId() {
         return id;
+    }
+
+    public AppUser getUser() {
+        return user;
+    }
+
+    public void setUser(AppUser user) {
+        this.user = user;
     }
 
     public Episode getEpisode() {

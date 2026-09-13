@@ -71,9 +71,9 @@ public class EpisodeService {
     public void deleteEpisode(Long movieId, Long episodeId) {
         Episode episode = findEpisodeByIdAndMovieId(movieId, episodeId);
 
-        episodeWatchProgressRepository
-                .findByEpisodeId(episodeId)
-                .ifPresent(episodeWatchProgressRepository::delete);
+        episodeWatchProgressRepository.deleteAll(
+                episodeWatchProgressRepository.findByEpisodeId(episodeId)
+        );
 
         episodeRepository.delete(episode);
     }

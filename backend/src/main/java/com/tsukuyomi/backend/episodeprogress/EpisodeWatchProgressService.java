@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import com.tsukuyomi.backend.episode.Episode;
 import com.tsukuyomi.backend.episode.EpisodeNotFoundException;
 import com.tsukuyomi.backend.episode.EpisodeRepository;
+import com.tsukuyomi.backend.user.AppUser;
+import com.tsukuyomi.backend.user.AppUserRepository;
 import com.tsukuyomi.backend.watchprogress.WatchProgressRequest;
 
 @Service
@@ -14,20 +16,27 @@ public class EpisodeWatchProgressService {
 
     private final EpisodeWatchProgressRepository episodeWatchProgressRepository;
     private final EpisodeRepository episodeRepository;
+    private final AppUserRepository appUserRepository;
 
     public EpisodeWatchProgressService(
             EpisodeWatchProgressRepository episodeWatchProgressRepository,
-            EpisodeRepository episodeRepository
+            EpisodeRepository episodeRepository,
+            AppUserRepository appUserRepository
     ) {
         this.episodeWatchProgressRepository = episodeWatchProgressRepository;
         this.episodeRepository = episodeRepository;
+        this.appUserRepository = appUserRepository;
     }
 
-    public EpisodeWatchProgressResponse getProgress(Long movieId, Long episodeId) {
+    public EpisodeWatchProgressResponse getProgress(
+            Long movieId,
+            Long episodeId,
+            String username
+    ) {
         findEpisodeByIdAndMovieId(movieId, episodeId);
 
         EpisodeWatchProgress progress = episodeWatchProgressRepository
-                .findByEpisodeId(episodeId)
+                .findByEpisodeIdAndUserUsername(episodeId, username)
                 .orElse(null);
 
         if (progress == null) {
@@ -40,14 +49,17 @@ public class EpisodeWatchProgressService {
     public EpisodeWatchProgressResponse saveProgress(
             Long movieId,
             Long episodeId,
-            WatchProgressRequest request
+            WatchProgressRequest request,
+            String username
     ) {
+        AppUser user = findUserByUsername(username);
         Episode episode = findEpisodeByIdAndMovieId(movieId, episodeId);
 
         EpisodeWatchProgress progress = episodeWatchProgressRepository
-                .findByEpisodeId(episodeId)
+                .findByEpisodeIdAndUserUsername(episodeId, username)
                 .orElseGet(EpisodeWatchProgress::new);
 
+        progress.setUser(user);
         progress.setEpisode(episode);
         progress.setProgressSeconds(request.getProgressSeconds());
         progress.setCompleted(request.getCompleted());
@@ -61,6 +73,11 @@ public class EpisodeWatchProgressService {
     private Episode findEpisodeByIdAndMovieId(Long movieId, Long episodeId) {
         return episodeRepository.findByIdAndMovieId(episodeId, movieId)
                 .orElseThrow(() -> new EpisodeNotFoundException(episodeId));
+    }
+
+    private AppUser findUserByUsername(String username) {
+        return appUserRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("Authenticated user not found"));
     }
 
     private EpisodeWatchProgressResponse toResponse(EpisodeWatchProgress progress) {
