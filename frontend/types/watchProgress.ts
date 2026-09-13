@@ -12,6 +12,13 @@ export type WatchProgressInput = {
   completed: boolean;
 };
 
+export type EpisodeWatchProgress = {
+  id: number | null;
+  episodeId: number;
+  progressSeconds: number;
+  completed: boolean;
+};
+
 export type ContinueWatchingItem = {
   movie: Movie;
   progress: WatchProgress;

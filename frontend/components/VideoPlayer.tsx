@@ -2,20 +2,20 @@
 
 import { useState } from "react";
 
-import { saveWatchProgress } from "@/lib/api";
+import { WatchProgressInput } from "@/types/watchProgress";
 
 type SaveStatus = "idle" | "saving" | "saved" | "error";
 
 type VideoPlayerProps = {
-  movieId: number;
   videoUrl: string;
   initialProgressSeconds: number;
+  onSaveProgress: (progress: WatchProgressInput) => Promise<void>;
 };
 
 export function VideoPlayer({
-  movieId,
   videoUrl,
   initialProgressSeconds,
+  onSaveProgress,
 }: VideoPlayerProps) {
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
 
@@ -31,7 +31,7 @@ export function VideoPlayer({
     try {
       setSaveStatus("saving");
 
-      await saveWatchProgress(movieId, {
+      await onSaveProgress({
         progressSeconds: Math.floor(video.currentTime),
         completed,
       });

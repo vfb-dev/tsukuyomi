@@ -4,6 +4,7 @@ import { Episode, EpisodeInput } from "@/types/episode";
 import { Movie, MovieInput } from "@/types/movie";
 import {
   ContinueWatchingItem,
+  EpisodeWatchProgress,
   WatchProgress,
   WatchProgressInput,
 } from "@/types/watchProgress";
@@ -248,6 +249,27 @@ export async function deleteEpisode(
   }
 }
 
+export async function getEpisodeWatchProgress(
+  movieId: number,
+  episodeId: number,
+): Promise<EpisodeWatchProgress> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/movies/${movieId}/episodes/${episodeId}/progress`,
+    {
+      cache: "no-store",
+      headers: {
+        ...getAuthHeaders(),
+      },
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch episode watch progress");
+  }
+
+  return response.json();
+}
+
 export async function getWatchProgress(
   movieId: number,
 ): Promise<WatchProgress> {
@@ -316,6 +338,30 @@ export async function saveWatchProgress(
 
   if (!response.ok) {
     throw new Error("Failed to save watch progress");
+  }
+
+  return response.json();
+}
+
+export async function saveEpisodeWatchProgress(
+  movieId: number,
+  episodeId: number,
+  progress: WatchProgressInput,
+): Promise<EpisodeWatchProgress> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/movies/${movieId}/episodes/${episodeId}/progress`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeaders(),
+      },
+      body: JSON.stringify(progress),
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to save episode watch progress");
   }
 
   return response.json();

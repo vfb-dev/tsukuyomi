@@ -6,10 +6,20 @@ import { useEffect, useState } from "react";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { PosterImage } from "@/components/PosterImage";
 import { VideoPlayer } from "@/components/VideoPlayer";
-import { getEpisodes, getMovie, getWatchProgress } from "@/lib/api";
+import {
+  getEpisodeWatchProgress,
+  getEpisodes,
+  getMovie,
+  getWatchProgress,
+  saveEpisodeWatchProgress,
+  saveWatchProgress,
+} from "@/lib/api";
 import { Episode } from "@/types/episode";
 import { Movie } from "@/types/movie";
-import { WatchProgress } from "@/types/watchProgress";
+import {
+  EpisodeWatchProgress,
+  WatchProgress,
+} from "@/types/watchProgress";
 
 type MovieDetailsPageContentProps = {
   movieId: number;
@@ -20,6 +30,9 @@ export function MovieDetailsPageContent({
 }: MovieDetailsPageContentProps) {
   const [movie, setMovie] = useState<Movie | null>(null);
   const [progress, setProgress] = useState<WatchProgress | null>(null);
+  const [episodeProgressById, setEpisodeProgressById] = useState<
+    Record<number, EpisodeWatchProgress>
+  >({});
   const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [selectedEpisodeId, setSelectedEpisodeId] = useState<number | null>(
     null,
@@ -42,10 +55,26 @@ export function MovieDetailsPageContent({
           isAnime ? Promise.resolve(null) : getWatchProgress(loadedMovie.id),
           isAnime ? getEpisodes(loadedMovie.id) : Promise.resolve([]),
         ]);
+        const loadedEpisodeProgressById: Record<number, EpisodeWatchProgress> =
+          {};
+
+        if (isAnime) {
+          const loadedEpisodeProgress = await Promise.all(
+            loadedEpisodes.map((episode) =>
+              getEpisodeWatchProgress(loadedMovie.id, episode.id),
+            ),
+          );
+
+          loadedEpisodeProgress.forEach((episodeProgress) => {
+            loadedEpisodeProgressById[episodeProgress.episodeId] =
+              episodeProgress;
+          });
+        }
 
         setMovie(loadedMovie);
         setProgress(loadedProgress);
         setEpisodes(loadedEpisodes);
+        setEpisodeProgressById(loadedEpisodeProgressById);
         setSelectedEpisodeId(isAnime ? (loadedEpisodes[0]?.id ?? null) : null);
       } catch {
         setHasError(true);
@@ -95,6 +124,12 @@ export function MovieDetailsPageContent({
     isAnime && selectedEpisodeId
       ? episodes.find((episode) => episode.id === selectedEpisodeId) ?? null
       : null;
+  const selectedEpisodeProgress = selectedEpisode
+    ? episodeProgressById[selectedEpisode.id]
+    : null;
+  const selectedEpisodeProgressMinutes = selectedEpisodeProgress
+    ? Math.floor(selectedEpisodeProgress.progressSeconds / 60)
+    : 0;
   const activeVideoTitle = selectedEpisode
     ? `S${selectedEpisode.seasonNumber} E${selectedEpisode.episodeNumber}: ${selectedEpisode.title}`
     : movie.title;
@@ -156,18 +191,36 @@ export function MovieDetailsPageContent({
       {!isAnime && movie.videoUrl && progress && (
         <VideoPlayer
           key={`${movie.id}-movie`}
-          movieId={movie.id}
           videoUrl={movie.videoUrl}
           initialProgressSeconds={progress.progressSeconds}
+          onSaveProgress={async (progressInput) => {
+            const savedProgress = await saveWatchProgress(
+              movie.id,
+              progressInput,
+            );
+
+            setProgress(savedProgress);
+          }}
         />
       )}
 
       {isAnime && selectedEpisode && (
         <VideoPlayer
           key={`${movie.id}-${selectedEpisode.id}`}
-          movieId={movie.id}
           videoUrl={selectedEpisode.videoUrl}
-          initialProgressSeconds={0}
+          initialProgressSeconds={selectedEpisodeProgress?.progressSeconds ?? 0}
+          onSaveProgress={async (progressInput) => {
+            const savedProgress = await saveEpisodeWatchProgress(
+              movie.id,
+              selectedEpisode.id,
+              progressInput,
+            );
+
+            setEpisodeProgressById((currentProgress) => ({
+              ...currentProgress,
+              [selectedEpisode.id]: savedProgress,
+            }));
+          }}
         />
       )}
 
@@ -185,12 +238,19 @@ export function MovieDetailsPageContent({
               <p className="mt-1 text-sm text-zinc-500">
                 Now playing: {activeVideoTitle}
               </p>
+              {selectedEpisodeProgress && (
+                <p className="mt-1 text-sm text-zinc-500">
+                  Saved progress: {selectedEpisodeProgressMinutes} min
+                  {selectedEpisodeProgress.completed ? " • Completed" : ""}
+                </p>
+              )}
             </div>
           </div>
 
           <div className="mt-4 grid gap-3">
             {episodes.map((episode) => {
               const isSelected = episode.id === selectedEpisode?.id;
+              const episodeProgress = episodeProgressById[episode.id];
 
               return (
                 <button
@@ -213,6 +273,12 @@ export function MovieDetailsPageContent({
                   <p className="mt-1 text-sm text-zinc-400">
                     {episode.durationMinutes} min
                   </p>
+                  {episodeProgress && episodeProgress.progressSeconds > 0 && (
+                    <p className="mt-1 text-sm text-zinc-500">
+                      {Math.floor(episodeProgress.progressSeconds / 60)} min
+                      watched
+                    </p>
+                  )}
                 </button>
               );
             })}

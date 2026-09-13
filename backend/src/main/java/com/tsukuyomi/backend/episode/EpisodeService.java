@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.tsukuyomi.backend.episodeprogress.EpisodeWatchProgressRepository;
 import com.tsukuyomi.backend.movie.Movie;
 import com.tsukuyomi.backend.movie.MovieNotFoundException;
 import com.tsukuyomi.backend.movie.MovieRepository;
@@ -13,13 +14,16 @@ public class EpisodeService {
 
     private final EpisodeRepository episodeRepository;
     private final MovieRepository movieRepository;
+    private final EpisodeWatchProgressRepository episodeWatchProgressRepository;
 
     public EpisodeService(
             EpisodeRepository episodeRepository,
-            MovieRepository movieRepository
+            MovieRepository movieRepository,
+            EpisodeWatchProgressRepository episodeWatchProgressRepository
     ) {
         this.episodeRepository = episodeRepository;
         this.movieRepository = movieRepository;
+        this.episodeWatchProgressRepository = episodeWatchProgressRepository;
     }
 
     public List<EpisodeResponse> getEpisodes(Long movieId) {
@@ -66,6 +70,10 @@ public class EpisodeService {
 
     public void deleteEpisode(Long movieId, Long episodeId) {
         Episode episode = findEpisodeByIdAndMovieId(movieId, episodeId);
+
+        episodeWatchProgressRepository
+                .findByEpisodeId(episodeId)
+                .ifPresent(episodeWatchProgressRepository::delete);
 
         episodeRepository.delete(episode);
     }

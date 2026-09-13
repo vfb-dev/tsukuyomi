@@ -32,6 +32,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/movies/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/watch-progress/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/movies/*/progress").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/movies/*/episodes/*/progress").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/movies").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/movies/*/episodes").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/movies/*").hasRole("ADMIN")
