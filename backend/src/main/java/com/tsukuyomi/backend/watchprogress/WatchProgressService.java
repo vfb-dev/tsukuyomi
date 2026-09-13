@@ -10,6 +10,7 @@ import com.tsukuyomi.backend.episode.Episode;
 import com.tsukuyomi.backend.episode.EpisodeResponse;
 import com.tsukuyomi.backend.episodeprogress.EpisodeWatchProgress;
 import com.tsukuyomi.backend.episodeprogress.EpisodeWatchProgressRepository;
+import com.tsukuyomi.backend.favorite.FavoriteRepository;
 import com.tsukuyomi.backend.movie.Movie;
 import com.tsukuyomi.backend.movie.MovieNotFoundException;
 import com.tsukuyomi.backend.movie.MovieRepository;
@@ -24,17 +25,20 @@ public class WatchProgressService {
     private final EpisodeWatchProgressRepository episodeWatchProgressRepository;
     private final MovieRepository movieRepository;
     private final AppUserRepository appUserRepository;
+    private final FavoriteRepository favoriteRepository;
 
     public WatchProgressService(
             WatchProgressRepository watchProgressRepository,
             EpisodeWatchProgressRepository episodeWatchProgressRepository,
             MovieRepository movieRepository,
-            AppUserRepository appUserRepository
+            AppUserRepository appUserRepository,
+            FavoriteRepository favoriteRepository
     ) {
         this.watchProgressRepository = watchProgressRepository;
         this.episodeWatchProgressRepository = episodeWatchProgressRepository;
         this.movieRepository = movieRepository;
         this.appUserRepository = appUserRepository;
+        this.favoriteRepository = favoriteRepository;
     }
 
     public List<ContinueWatchingResponse> getContinueWatching(String username) {
@@ -47,7 +51,7 @@ public class WatchProgressService {
                 )
                 .stream()
                 .map(progress -> new ContinueWatchingCandidate(
-                        toContinueWatchingResponse(progress),
+                        toContinueWatchingResponse(progress, username),
                         progress.getUpdatedAt(),
                         progress.getId()
                 ))
@@ -60,7 +64,7 @@ public class WatchProgressService {
                 )
                 .stream()
                 .map(progress -> new ContinueWatchingCandidate(
-                        toContinueWatchingResponse(progress),
+                        toContinueWatchingResponse(progress, username),
                         progress.getUpdatedAt(),
                         progress.getId()
                 ))
@@ -78,13 +82,13 @@ public class WatchProgressService {
         List<ContinueWatchingResponse> movieItems = watchProgressRepository
                 .findByUserUsernameAndCompletedTrueOrderByUpdatedAtDescIdDesc(username)
                 .stream()
-                .map(this::toContinueWatchingResponse)
+                .map(progress -> toContinueWatchingResponse(progress, username))
                 .toList();
 
         List<ContinueWatchingResponse> episodeItems = episodeWatchProgressRepository
                 .findByUserUsernameAndCompletedTrueOrderByUpdatedAtDescIdDesc(username)
                 .stream()
-                .map(this::toContinueWatchingResponse)
+                .map(progress -> toContinueWatchingResponse(progress, username))
                 .toList();
 
         items.addAll(movieItems);
@@ -144,9 +148,9 @@ public class WatchProgressService {
         );
     }
 
-    private ContinueWatchingResponse toContinueWatchingResponse(WatchProgress progress) {
+    private ContinueWatchingResponse toContinueWatchingResponse(WatchProgress progress, String username) {
         return new ContinueWatchingResponse(
-                toMovieResponse(progress.getMovie()),
+                toMovieResponse(progress.getMovie(), username),
                 null,
                 new ContinueWatchingProgressResponse(
                         progress.getId(),
@@ -156,11 +160,11 @@ public class WatchProgressService {
         );
     }
 
-    private ContinueWatchingResponse toContinueWatchingResponse(EpisodeWatchProgress progress) {
+    private ContinueWatchingResponse toContinueWatchingResponse(EpisodeWatchProgress progress, String username) {
         Episode episode = progress.getEpisode();
 
         return new ContinueWatchingResponse(
-                toMovieResponse(episode.getMovie()),
+                toMovieResponse(episode.getMovie(), username),
                 toEpisodeResponse(episode),
                 new ContinueWatchingProgressResponse(
                         progress.getId(),
@@ -170,7 +174,7 @@ public class WatchProgressService {
         );
     }
 
-    private MovieResponse toMovieResponse(Movie movie) {
+    private MovieResponse toMovieResponse(Movie movie, String username) {
         return new MovieResponse(
                 movie.getId(),
                 movie.getTitle(),
@@ -181,7 +185,7 @@ public class WatchProgressService {
                 movie.getVideoUrl(),
                 movie.getCategory(),
                 getMediaType(movie),
-                movie.getFavorite()
+                favoriteRepository.existsByMovieIdAndUserUsername(movie.getId(), username)
         );
     }
 

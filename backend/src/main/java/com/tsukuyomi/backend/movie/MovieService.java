@@ -1,29 +1,48 @@
 package com.tsukuyomi.backend.movie;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.tsukuyomi.backend.favorite.Favorite;
+import com.tsukuyomi.backend.favorite.FavoriteRepository;
+import com.tsukuyomi.backend.user.AppUser;
+import com.tsukuyomi.backend.user.AppUserRepository;
 
 @Service
 public class MovieService {
 
     private final MovieRepository movieRepository;
+    private final FavoriteRepository favoriteRepository;
+    private final AppUserRepository appUserRepository;
 
-    public MovieService(MovieRepository movieRepository) {
+    public MovieService(
+            MovieRepository movieRepository,
+            FavoriteRepository favoriteRepository,
+            AppUserRepository appUserRepository
+    ) {
         this.movieRepository = movieRepository;
+        this.favoriteRepository = favoriteRepository;
+        this.appUserRepository = appUserRepository;
     }
 
-    public List<MovieResponse> searchMovies(String search, String category, Boolean favorite) {
+    public List<MovieResponse> searchMovies(
+            String search,
+            String category,
+            Boolean favorite,
+            String username
+    ) {
         boolean hasSearch = search != null && !search.isBlank();
         boolean hasCategory = category != null && !category.isBlank();
         boolean onlyFavorites = Boolean.TRUE.equals(favorite);
 
         List<Movie> movies;
 
-        if (onlyFavorites) {
-            movies = movieRepository.findByFavoriteTrueOrderByReleaseYearDesc();
-        } else if (hasSearch && hasCategory) {
+        if (hasSearch && hasCategory) {
             movies = movieRepository.findByTitleContainingIgnoreCaseAndCategoryIgnoreCaseOrderByReleaseYearDesc(
                     search,
                     category
@@ -36,15 +55,18 @@ public class MovieService {
             movies = movieRepository.findAll(Sort.by(Sort.Direction.DESC, "releaseYear"));
         }
 
+        Set<Long> favoriteMovieIds = getFavoriteMovieIds(username);
+
         return movies.stream()
-                .map(this::toResponse)
+                .filter(movie -> !onlyFavorites || favoriteMovieIds.contains(movie.getId()))
+                .map(movie -> toResponse(movie, favoriteMovieIds.contains(movie.getId())))
                 .toList();
     }
 
-    public MovieResponse getMovieById(Long id) {
+    public MovieResponse getMovieById(Long id, String username) {
         Movie movie = findMovieById(id);
 
-        return toResponse(movie);
+        return toResponse(movie, isFavorite(movie.getId(), username));
     }
 
     public MovieResponse createMovie(MovieRequest request) {
@@ -59,14 +81,13 @@ public class MovieService {
         movie.setVideoUrl(getVideoUrl(request));
         movie.setCategory(request.getCategory());
         movie.setMediaType(mediaType);
-        movie.setFavorite(false);
 
         Movie savedMovie = movieRepository.save(movie);
 
-        return toResponse(savedMovie);
+        return toResponse(savedMovie, false);
     }
 
-    public MovieResponse updateMovie(Long id, MovieRequest request) {
+    public MovieResponse updateMovie(Long id, MovieRequest request, String username) {
         Movie movie = findMovieById(id);
         String mediaType = request.getMediaType();
 
@@ -81,23 +102,38 @@ public class MovieService {
 
         Movie updatedMovie = movieRepository.save(movie);
 
-        return toResponse(updatedMovie);
+        return toResponse(updatedMovie, isFavorite(updatedMovie.getId(), username));
     }
 
-    public MovieResponse toggleFavorite(Long id) {
+    @Transactional
+    public MovieResponse toggleFavorite(Long id, String username) {
         Movie movie = findMovieById(id);
-        boolean currentFavorite = Boolean.TRUE.equals(movie.getFavorite());
+        Favorite existingFavorite = favoriteRepository
+                .findByMovieIdAndUserUsername(id, username)
+                .orElse(null);
 
-        movie.setFavorite(!currentFavorite);
+        if (existingFavorite != null) {
+            favoriteRepository.delete(existingFavorite);
 
-        Movie updatedMovie = movieRepository.save(movie);
+            return toResponse(movie, false);
+        }
 
-        return toResponse(updatedMovie);
+        AppUser user = findUserByUsername(username);
+        Favorite favorite = new Favorite();
+
+        favorite.setUser(user);
+        favorite.setMovie(movie);
+
+        favoriteRepository.save(favorite);
+
+        return toResponse(movie, true);
     }
 
+    @Transactional
     public void deleteMovie(Long id) {
         Movie movie = findMovieById(id);
 
+        favoriteRepository.deleteAll(favoriteRepository.findByMovieId(id));
         movieRepository.delete(movie);
     }
 
@@ -106,7 +142,32 @@ public class MovieService {
                 .orElseThrow(() -> new MovieNotFoundException(id));
     }
 
-    private MovieResponse toResponse(Movie movie) {
+    private AppUser findUserByUsername(String username) {
+        return appUserRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("Authenticated user not found"));
+    }
+
+    private Set<Long> getFavoriteMovieIds(String username) {
+        if (username == null || username.isBlank()) {
+            return Set.of();
+        }
+
+        return favoriteRepository.findByUserUsername(username)
+                .stream()
+                .map(Favorite::getMovie)
+                .map(Movie::getId)
+                .collect(Collectors.toSet());
+    }
+
+    private boolean isFavorite(Long movieId, String username) {
+        if (username == null || username.isBlank()) {
+            return false;
+        }
+
+        return favoriteRepository.existsByMovieIdAndUserUsername(movieId, username);
+    }
+
+    private MovieResponse toResponse(Movie movie, boolean favorite) {
         return new MovieResponse(
                 movie.getId(),
                 movie.getTitle(),
@@ -117,7 +178,7 @@ public class MovieService {
                 movie.getVideoUrl(),
                 movie.getCategory(),
                 getMediaType(movie),
-                movie.getFavorite()
+                favorite
         );
     }
 

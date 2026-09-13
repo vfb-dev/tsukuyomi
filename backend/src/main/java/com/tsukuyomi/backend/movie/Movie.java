@@ -20,7 +20,6 @@ public class Movie {
     private String videoUrl;
     private String category;
     private String mediaType = "MOVIE";
-    private Boolean favorite = false;
 
     public Movie() {
     }
@@ -95,13 +94,5 @@ public class Movie {
 
     public void setMediaType(String mediaType) {
         this.mediaType = mediaType;
-    }
-
-    public Boolean getFavorite() {
-        return favorite;
-    }
-
-    public void setFavorite(Boolean favorite) {
-        this.favorite = favorite;
     }
 }

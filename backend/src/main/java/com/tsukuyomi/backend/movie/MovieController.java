@@ -3,6 +3,7 @@ package com.tsukuyomi.backend.movie;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -31,14 +32,18 @@ public class MovieController {
     public List<MovieResponse> getMovies(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String category,
-            @RequestParam(required = false) Boolean favorite
+            @RequestParam(required = false) Boolean favorite,
+            Authentication authentication
     ) {
-        return movieService.searchMovies(search, category, favorite);
+        return movieService.searchMovies(search, category, favorite, authentication.getName());
     }
 
     @GetMapping("/{id}")
-    public MovieResponse getMovieById(@PathVariable Long id) {
-        return movieService.getMovieById(id);
+    public MovieResponse getMovieById(
+            @PathVariable Long id,
+            Authentication authentication
+    ) {
+        return movieService.getMovieById(id, authentication.getName());
     }
 
     @PostMapping
@@ -47,13 +52,20 @@ public class MovieController {
     }
 
     @PutMapping("/{id}")
-    public MovieResponse updateMovie(@PathVariable Long id, @Valid @RequestBody MovieRequest request) {
-        return movieService.updateMovie(id, request);
+    public MovieResponse updateMovie(
+            @PathVariable Long id,
+            @Valid @RequestBody MovieRequest request,
+            Authentication authentication
+    ) {
+        return movieService.updateMovie(id, request, authentication.getName());
     }
 
     @PatchMapping("/{id}/favorite")
-    public MovieResponse toggleFavorite(@PathVariable Long id) {
-        return movieService.toggleFavorite(id);
+    public MovieResponse toggleFavorite(
+            @PathVariable Long id,
+            Authentication authentication
+    ) {
+        return movieService.toggleFavorite(id, authentication.getName());
     }
 
     @DeleteMapping("/{id}")

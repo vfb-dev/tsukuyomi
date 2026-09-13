@@ -10,8 +10,6 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
 
     List<Movie> findByCategoryIgnoreCaseOrderByReleaseYearDesc(String category);
 
-    List<Movie> findByFavoriteTrueOrderByReleaseYearDesc();
-
     List<Movie> findByTitleContainingIgnoreCaseAndCategoryIgnoreCaseOrderByReleaseYearDesc(
             String title,
             String category
