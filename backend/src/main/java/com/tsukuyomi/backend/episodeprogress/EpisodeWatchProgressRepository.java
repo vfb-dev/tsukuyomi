@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface EpisodeWatchProgressRepository extends JpaRepository<EpisodeWatchProgress, Long> {
 
+    List<EpisodeWatchProgress> findByUserId(Long userId);
+
     Optional<EpisodeWatchProgress> findByEpisodeIdAndUserUsername(Long episodeId, String username);
 
     List<EpisodeWatchProgress> findByUserUsernameAndProgressSecondsGreaterThanAndCompletedFalseOrderByUpdatedAtDescIdDesc(

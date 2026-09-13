@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 
 import { CreateMovieForm } from "@/components/CreateMovieForm";
 import { DeleteMovieButton } from "@/components/DeleteMovieButton";
-import { LogoutButton } from "@/components/LogoutButton";
 import { getMovies } from "@/lib/api";
 import { Movie } from "@/types/movie";
 
@@ -43,15 +42,11 @@ export function AdminCatalogPageContent() {
 
   return (
     <section className="px-8 py-10">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold">Admin Catalog</h1>
-          <p className="mt-2 text-sm text-gray-400">
-            Create and manage movies and anime in your catalog.
-          </p>
-        </div>
-
-        <LogoutButton />
+      <div>
+        <h1 className="text-3xl font-bold">Admin Catalog</h1>
+        <p className="mt-2 text-sm text-gray-400">
+          Create and manage movies and anime in your catalog.
+        </p>
       </div>
 
       <CreateMovieForm onMovieCreated={loadMovies} />

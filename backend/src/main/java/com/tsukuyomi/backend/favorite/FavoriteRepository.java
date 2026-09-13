@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
 
+    List<Favorite> findByUserId(Long userId);
+
     List<Favorite> findByUserUsername(String username);
 
     List<Favorite> findByMovieId(Long movieId);
