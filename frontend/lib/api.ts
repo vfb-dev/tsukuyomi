@@ -30,6 +30,35 @@ function getAuthHeaders() {
   };
 }
 
+async function getErrorMessage(response: Response, fallbackMessage: string) {
+  try {
+    const body = (await response.json()) as unknown;
+
+    if (body && typeof body === "object") {
+      const errorBody = body as Record<string, unknown>;
+      const detail = errorBody.detail;
+      const message = errorBody.message;
+      const error = errorBody.error;
+
+      if (typeof detail === "string" && detail) {
+        return detail;
+      }
+
+      if (typeof message === "string" && message) {
+        return message;
+      }
+
+      if (typeof error === "string" && error) {
+        return error;
+      }
+    }
+  } catch {
+    return fallbackMessage;
+  }
+
+  return fallbackMessage;
+}
+
 type GetMoviesParams = {
   search?: string;
   category?: string;
@@ -444,6 +473,6 @@ export async function deleteUser(id: number): Promise<void> {
   });
 
   if (!response.ok) {
-    throw new Error("Failed to delete user");
+    throw new Error(await getErrorMessage(response, "Failed to delete user"));
   }
 }

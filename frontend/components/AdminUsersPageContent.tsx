@@ -13,6 +13,7 @@ export function AdminUsersPageContent() {
   const [hasError, setHasError] = useState(false);
   const [formStatus, setFormStatus] = useState<FormStatus>("idle");
   const [deletingUserId, setDeletingUserId] = useState<number | null>(null);
+  const [deleteError, setDeleteError] = useState("");
 
   async function loadUsers() {
     try {
@@ -73,9 +74,14 @@ export function AdminUsersPageContent() {
     }
 
     try {
+      setDeleteError("");
       setDeletingUserId(userId);
       await deleteUser(userId);
       await loadUsers();
+    } catch (error) {
+      setDeleteError(
+        error instanceof Error ? error.message : "Could not delete user.",
+      );
     } finally {
       setDeletingUserId(null);
     }
@@ -159,6 +165,10 @@ export function AdminUsersPageContent() {
 
       <section className="mt-10">
         <h2 className="text-xl font-semibold">Existing Users</h2>
+
+        {deleteError && (
+          <p className="mt-4 text-sm text-red-400">{deleteError}</p>
+        )}
 
         {isLoading && (
           <p className="mt-4 text-sm text-zinc-500">Loading users...</p>
