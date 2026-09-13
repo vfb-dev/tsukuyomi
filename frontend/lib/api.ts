@@ -458,7 +458,7 @@ export async function createUser(user: AppUserInput): Promise<AppUser> {
   });
 
   if (!response.ok) {
-    throw new Error("Failed to create user");
+    throw new Error(await getErrorMessage(response, "Failed to create user"));
   }
 
   return response.json();

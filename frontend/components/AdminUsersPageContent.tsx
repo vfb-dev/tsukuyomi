@@ -12,6 +12,7 @@ export function AdminUsersPageContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [formStatus, setFormStatus] = useState<FormStatus>("idle");
+  const [createError, setCreateError] = useState("");
   const [deletingUserId, setDeletingUserId] = useState<number | null>(null);
   const [deleteError, setDeleteError] = useState("");
 
@@ -54,6 +55,7 @@ export function AdminUsersPageContent() {
     };
 
     try {
+      setCreateError("");
       setFormStatus("saving");
 
       await createUser(userInput);
@@ -61,7 +63,10 @@ export function AdminUsersPageContent() {
 
       form.reset();
       setFormStatus("success");
-    } catch {
+    } catch (error) {
+      setCreateError(
+        error instanceof Error ? error.message : "Could not create user.",
+      );
       setFormStatus("error");
     }
   }
@@ -158,7 +163,7 @@ export function AdminUsersPageContent() {
           )}
 
           {formStatus === "error" && (
-            <span className="text-sm text-red-400">Could not create user.</span>
+            <span className="text-sm text-red-400">{createError}</span>
           )}
         </div>
       </form>
