@@ -4,14 +4,11 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { HomeMovieRow } from "@/components/HomeMovieRow";
-import { getCompletedWatching, getContinueWatching } from "@/lib/api";
+import { getContinueWatching } from "@/lib/api";
 import { ContinueWatchingItem } from "@/types/watchProgress";
 
 export function HomePageContent() {
   const [continueWatchingItems, setContinueWatchingItems] = useState<
-    ContinueWatchingItem[]
-  >([]);
-  const [completedWatchingItems, setCompletedWatchingItems] = useState<
     ContinueWatchingItem[]
   >([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -20,13 +17,9 @@ export function HomePageContent() {
   useEffect(() => {
     async function loadRows() {
       try {
-        const [continueWatching, completedWatching] = await Promise.all([
-          getContinueWatching(),
-          getCompletedWatching(),
-        ]);
+        const continueWatching = await getContinueWatching();
 
         setContinueWatchingItems(continueWatching);
-        setCompletedWatchingItems(completedWatching);
       } catch {
         setHasError(true);
       } finally {
@@ -74,21 +67,12 @@ export function HomePageContent() {
       )}
 
       {!isLoading && !hasError && (
-        <>
-          <HomeMovieRow
-            title="Continue Watching"
-            emptyMessage="Start watching an item and it will appear here."
-            items={continueWatchingItems}
-            variant="progress"
-          />
-
-          <HomeMovieRow
-            title="Completed"
-            emptyMessage="Completed items will appear here."
-            items={completedWatchingItems}
-            variant="completed"
-          />
-        </>
+        <HomeMovieRow
+          title="Pick Up Where You Left Off"
+          emptyMessage="Start watching something and your latest unfinished item will appear here."
+          items={continueWatchingItems}
+          variant="progress"
+        />
       )}
     </>
   );
