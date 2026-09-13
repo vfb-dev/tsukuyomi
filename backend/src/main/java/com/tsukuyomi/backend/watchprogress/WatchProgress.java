@@ -3,13 +3,14 @@ package com.tsukuyomi.backend.watchprogress;
 import java.time.LocalDateTime;
 
 import com.tsukuyomi.backend.movie.Movie;
+import com.tsukuyomi.backend.user.AppUser;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class WatchProgress {
@@ -18,8 +19,12 @@ public class WatchProgress {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "movie_id", nullable = false, unique = true)
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private AppUser user;
+
+    @ManyToOne
+    @JoinColumn(name = "movie_id", nullable = false)
     private Movie movie;
 
     private Integer progressSeconds;
@@ -29,6 +34,14 @@ public class WatchProgress {
 
     public Long getId() {
         return id;
+    }
+
+    public AppUser getUser() {
+        return user;
+    }
+
+    public void setUser(AppUser user) {
+        this.user = user;
     }
 
     public Movie getMovie() {

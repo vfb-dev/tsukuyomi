@@ -14,6 +14,8 @@ import com.tsukuyomi.backend.movie.Movie;
 import com.tsukuyomi.backend.movie.MovieNotFoundException;
 import com.tsukuyomi.backend.movie.MovieRepository;
 import com.tsukuyomi.backend.movie.MovieResponse;
+import com.tsukuyomi.backend.user.AppUser;
+import com.tsukuyomi.backend.user.AppUserRepository;
 
 @Service
 public class WatchProgressService {
@@ -21,22 +23,28 @@ public class WatchProgressService {
     private final WatchProgressRepository watchProgressRepository;
     private final EpisodeWatchProgressRepository episodeWatchProgressRepository;
     private final MovieRepository movieRepository;
+    private final AppUserRepository appUserRepository;
 
     public WatchProgressService(
             WatchProgressRepository watchProgressRepository,
             EpisodeWatchProgressRepository episodeWatchProgressRepository,
-            MovieRepository movieRepository
+            MovieRepository movieRepository,
+            AppUserRepository appUserRepository
     ) {
         this.watchProgressRepository = watchProgressRepository;
         this.episodeWatchProgressRepository = episodeWatchProgressRepository;
         this.movieRepository = movieRepository;
+        this.appUserRepository = appUserRepository;
     }
 
-    public List<ContinueWatchingResponse> getContinueWatching() {
+    public List<ContinueWatchingResponse> getContinueWatching(String username) {
         List<ContinueWatchingCandidate> candidates = new ArrayList<>();
 
         watchProgressRepository
-                .findByProgressSecondsGreaterThanAndCompletedFalseOrderByIdDesc(0)
+                .findByUserUsernameAndProgressSecondsGreaterThanAndCompletedFalseOrderByUpdatedAtDescIdDesc(
+                        username,
+                        0
+                )
                 .stream()
                 .map(progress -> new ContinueWatchingCandidate(
                         toContinueWatchingResponse(progress),
@@ -61,11 +69,11 @@ public class WatchProgressService {
                 .orElseGet(List::of);
     }
 
-    public List<ContinueWatchingResponse> getCompletedWatching() {
+    public List<ContinueWatchingResponse> getCompletedWatching(String username) {
         List<ContinueWatchingResponse> items = new ArrayList<>();
 
         List<ContinueWatchingResponse> movieItems = watchProgressRepository
-                .findByCompletedTrueOrderByIdDesc()
+                .findByUserUsernameAndCompletedTrueOrderByUpdatedAtDescIdDesc(username)
                 .stream()
                 .map(this::toContinueWatchingResponse)
                 .toList();
@@ -82,9 +90,9 @@ public class WatchProgressService {
         return items;
     }
 
-    public WatchProgressResponse getProgress(Long movieId) {
+    public WatchProgressResponse getProgress(Long movieId, String username) {
         WatchProgress progress = watchProgressRepository
-                .findByMovieId(movieId)
+                .findByMovieIdAndUserUsername(movieId, username)
                 .orElse(null);
 
         if (progress == null) {
@@ -96,16 +104,19 @@ public class WatchProgressService {
 
     public WatchProgressResponse saveProgress(
             Long movieId,
-            WatchProgressRequest request
+            WatchProgressRequest request,
+            String username
     ) {
+        AppUser user = findUserByUsername(username);
         Movie movie = movieRepository
                 .findById(movieId)
                 .orElseThrow(() -> new MovieNotFoundException(movieId));
 
         WatchProgress progress = watchProgressRepository
-                .findByMovieId(movieId)
+                .findByMovieIdAndUserUsername(movieId, username)
                 .orElseGet(WatchProgress::new);
 
+        progress.setUser(user);
         progress.setMovie(movie);
         progress.setProgressSeconds(request.getProgressSeconds());
         progress.setCompleted(request.getCompleted());
@@ -114,6 +125,11 @@ public class WatchProgressService {
         WatchProgress savedProgress = watchProgressRepository.save(progress);
 
         return toResponse(savedProgress);
+    }
+
+    private AppUser findUserByUsername(String username) {
+        return appUserRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("Authenticated user not found"));
     }
 
     private WatchProgressResponse toResponse(WatchProgress progress) {

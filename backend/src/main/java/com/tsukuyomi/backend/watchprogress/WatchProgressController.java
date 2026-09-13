@@ -2,6 +2,7 @@ package com.tsukuyomi.backend.watchprogress;
 
 import java.util.List;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,25 +23,29 @@ public class WatchProgressController {
     }
 
     @GetMapping("/watch-progress/continue")
-    public List<ContinueWatchingResponse> getContinueWatching() {
-        return watchProgressService.getContinueWatching();
+    public List<ContinueWatchingResponse> getContinueWatching(Authentication authentication) {
+        return watchProgressService.getContinueWatching(authentication.getName());
     }
 
     @GetMapping("/watch-progress/completed")
-    public List<ContinueWatchingResponse> getCompletedWatching() {
-        return watchProgressService.getCompletedWatching();
+    public List<ContinueWatchingResponse> getCompletedWatching(Authentication authentication) {
+        return watchProgressService.getCompletedWatching(authentication.getName());
     }
 
     @GetMapping("/movies/{movieId}/progress")
-    public WatchProgressResponse getProgress(@PathVariable Long movieId) {
-        return watchProgressService.getProgress(movieId);
+    public WatchProgressResponse getProgress(
+            @PathVariable Long movieId,
+            Authentication authentication
+    ) {
+        return watchProgressService.getProgress(movieId, authentication.getName());
     }
 
     @PatchMapping("/movies/{movieId}/progress")
     public WatchProgressResponse saveProgress(
             @PathVariable Long movieId,
-            @Valid @RequestBody WatchProgressRequest request
+            @Valid @RequestBody WatchProgressRequest request,
+            Authentication authentication
     ) {
-        return watchProgressService.saveProgress(movieId, request);
+        return watchProgressService.saveProgress(movieId, request, authentication.getName());
     }
 }
