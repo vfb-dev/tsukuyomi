@@ -11,8 +11,17 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
+@Table(
+        name = "watch_progress",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_watch_progress_user_movie",
+                columnNames = {"user_id", "movie_id"}
+        )
+)
 public class WatchProgress {
 
     @Id
