@@ -49,15 +49,16 @@ public class MovieService {
 
     public MovieResponse createMovie(MovieRequest request) {
         Movie movie = new Movie();
+        String mediaType = request.getMediaType();
 
         movie.setTitle(request.getTitle());
         movie.setDescription(request.getDescription());
         movie.setReleaseYear(request.getReleaseYear());
         movie.setDurationMinutes(request.getDurationMinutes());
         movie.setPosterUrl(request.getPosterUrl());
-        movie.setVideoUrl(request.getVideoUrl());
+        movie.setVideoUrl(getVideoUrl(request));
         movie.setCategory(request.getCategory());
-        movie.setMediaType(request.getMediaType());
+        movie.setMediaType(mediaType);
         movie.setFavorite(false);
 
         Movie savedMovie = movieRepository.save(movie);
@@ -67,15 +68,16 @@ public class MovieService {
 
     public MovieResponse updateMovie(Long id, MovieRequest request) {
         Movie movie = findMovieById(id);
+        String mediaType = request.getMediaType();
 
         movie.setTitle(request.getTitle());
         movie.setDescription(request.getDescription());
         movie.setReleaseYear(request.getReleaseYear());
         movie.setDurationMinutes(request.getDurationMinutes());
         movie.setPosterUrl(request.getPosterUrl());
-        movie.setVideoUrl(request.getVideoUrl());
+        movie.setVideoUrl(getVideoUrl(request));
         movie.setCategory(request.getCategory());
-        movie.setMediaType(request.getMediaType());
+        movie.setMediaType(mediaType);
 
         Movie updatedMovie = movieRepository.save(movie);
 
@@ -125,5 +127,13 @@ public class MovieService {
         }
 
         return movie.getMediaType();
+    }
+
+    private String getVideoUrl(MovieRequest request) {
+        if ("ANIME".equals(request.getMediaType())) {
+            return "";
+        }
+
+        return request.getVideoUrl();
     }
 }

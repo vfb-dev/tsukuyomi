@@ -50,15 +50,15 @@ export function CreateMovieForm({ onMovieCreated }: CreateMovieFormProps) {
         disabled={status === "saving"}
         className="mt-2 rounded bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-gray-700"
       >
-        {status === "saving" ? "Creating..." : "Create Movie"}
+        {status === "saving" ? "Creating..." : "Create item"}
       </button>
 
       {status === "success" && (
-        <p className="text-sm text-green-400">Movie created successfully.</p>
+        <p className="text-sm text-green-400">Item created successfully.</p>
       )}
 
       {status === "error" && (
-        <p className="text-sm text-red-400">Could not create movie.</p>
+        <p className="text-sm text-red-400">Could not create item.</p>
       )}
     </form>
   );

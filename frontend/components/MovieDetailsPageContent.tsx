@@ -6,7 +6,8 @@ import { useEffect, useState } from "react";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { PosterImage } from "@/components/PosterImage";
 import { VideoPlayer } from "@/components/VideoPlayer";
-import { getMovie, getWatchProgress } from "@/lib/api";
+import { getEpisodes, getMovie, getWatchProgress } from "@/lib/api";
+import { Episode } from "@/types/episode";
 import { Movie } from "@/types/movie";
 import { WatchProgress } from "@/types/watchProgress";
 
@@ -19,6 +20,10 @@ export function MovieDetailsPageContent({
 }: MovieDetailsPageContentProps) {
   const [movie, setMovie] = useState<Movie | null>(null);
   const [progress, setProgress] = useState<WatchProgress | null>(null);
+  const [episodes, setEpisodes] = useState<Episode[]>([]);
+  const [selectedEpisodeId, setSelectedEpisodeId] = useState<number | null>(
+    null,
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
@@ -32,10 +37,16 @@ export function MovieDetailsPageContent({
           return;
         }
 
-        const loadedProgress = await getWatchProgress(loadedMovie.id);
+        const isAnime = loadedMovie.mediaType === "ANIME";
+        const [loadedProgress, loadedEpisodes] = await Promise.all([
+          isAnime ? Promise.resolve(null) : getWatchProgress(loadedMovie.id),
+          isAnime ? getEpisodes(loadedMovie.id) : Promise.resolve([]),
+        ]);
 
         setMovie(loadedMovie);
         setProgress(loadedProgress);
+        setEpisodes(loadedEpisodes);
+        setSelectedEpisodeId(isAnime ? (loadedEpisodes[0]?.id ?? null) : null);
       } catch {
         setHasError(true);
       } finally {
@@ -62,7 +73,7 @@ export function MovieDetailsPageContent({
     );
   }
 
-  if (!movie || !progress) {
+  if (!movie || (movie.mediaType !== "ANIME" && !progress)) {
     return (
       <section className="mx-auto max-w-5xl px-8 py-10">
         <Link
@@ -76,7 +87,17 @@ export function MovieDetailsPageContent({
     );
   }
 
-  const progressMinutes = Math.floor(progress.progressSeconds / 60);
+  const isAnime = movie.mediaType === "ANIME";
+  const progressMinutes = progress
+    ? Math.floor(progress.progressSeconds / 60)
+    : 0;
+  const selectedEpisode =
+    isAnime && selectedEpisodeId
+      ? episodes.find((episode) => episode.id === selectedEpisodeId) ?? null
+      : null;
+  const activeVideoTitle = selectedEpisode
+    ? `S${selectedEpisode.seasonNumber} E${selectedEpisode.episodeNumber}: ${selectedEpisode.title}`
+    : movie.title;
 
   return (
     <section className="mx-auto max-w-5xl px-8 py-10">
@@ -123,18 +144,81 @@ export function MovieDetailsPageContent({
             />
           </div>
 
-          <p className="mt-6 text-sm text-zinc-400">
-            Saved progress: {progressMinutes} min
-            {progress.completed ? " • Completed" : ""}
-          </p>
+          {!isAnime && progress && (
+            <p className="mt-6 text-sm text-zinc-400">
+              Saved progress: {progressMinutes} min
+              {progress.completed ? " • Completed" : ""}
+            </p>
+          )}
         </div>
       </div>
 
-      <VideoPlayer
-        movieId={movie.id}
-        videoUrl={movie.videoUrl}
-        initialProgressSeconds={progress.progressSeconds}
-      />
+      {!isAnime && movie.videoUrl && progress && (
+        <VideoPlayer
+          key={`${movie.id}-movie`}
+          movieId={movie.id}
+          videoUrl={movie.videoUrl}
+          initialProgressSeconds={progress.progressSeconds}
+        />
+      )}
+
+      {isAnime && selectedEpisode && (
+        <VideoPlayer
+          key={`${movie.id}-${selectedEpisode.id}`}
+          movieId={movie.id}
+          videoUrl={selectedEpisode.videoUrl}
+          initialProgressSeconds={0}
+        />
+      )}
+
+      {isAnime && episodes.length === 0 && (
+        <p className="mt-10 rounded border border-zinc-800 bg-zinc-950 p-4 text-sm text-zinc-400">
+          No episodes added yet.
+        </p>
+      )}
+
+      {isAnime && episodes.length > 0 && (
+        <section className="mt-8">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h2 className="text-2xl font-bold">Episodes</h2>
+              <p className="mt-1 text-sm text-zinc-500">
+                Now playing: {activeVideoTitle}
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-4 grid gap-3">
+            {episodes.map((episode) => {
+              const isSelected = episode.id === selectedEpisode?.id;
+
+              return (
+                <button
+                  key={episode.id}
+                  type="button"
+                  onClick={() => setSelectedEpisodeId(episode.id)}
+                  className={`rounded border px-4 py-3 text-left transition ${
+                    isSelected
+                      ? "border-red-600 bg-red-600/10"
+                      : "border-zinc-800 bg-zinc-950 hover:border-zinc-600"
+                  }`}
+                >
+                  <p className="text-sm text-zinc-500">
+                    Season {episode.seasonNumber} • Episode{" "}
+                    {episode.episodeNumber}
+                  </p>
+                  <p className="mt-1 font-semibold text-white">
+                    {episode.title}
+                  </p>
+                  <p className="mt-1 text-sm text-zinc-400">
+                    {episode.durationMinutes} min
+                  </p>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      )}
     </section>
   );
 }

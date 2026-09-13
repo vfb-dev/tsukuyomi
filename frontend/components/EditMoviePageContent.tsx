@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { EditMovieForm } from "@/components/EditMovieForm";
+import { EpisodeManager } from "@/components/EpisodeManager";
 import { getMovie } from "@/lib/api";
 import { Movie } from "@/types/movie";
 
@@ -62,7 +63,12 @@ export function EditMoviePageContent({ movieId }: EditMoviePageContentProps) {
         <p className="text-sm text-zinc-400">Catalog item not found.</p>
       )}
 
-      {movie && <EditMovieForm movie={movie} />}
+      {movie && (
+        <>
+          <EditMovieForm movie={movie} />
+          {movie.mediaType === "ANIME" && <EpisodeManager movieId={movie.id} />}
+        </>
+      )}
     </section>
   );
 }

@@ -1,5 +1,6 @@
 import { getAuthToken } from "@/lib/auth";
 import { AuthUser, LoginInput, LoginResponse } from "@/types/auth";
+import { Episode, EpisodeInput } from "@/types/episode";
 import { Movie, MovieInput } from "@/types/movie";
 import {
   ContinueWatchingItem,
@@ -145,6 +146,105 @@ export async function deleteMovie(id: number): Promise<void> {
 
   if (!response.ok) {
     throw new Error("Failed to delete movie");
+  }
+}
+
+export async function getEpisodes(movieId: number): Promise<Episode[]> {
+  const response = await fetch(`${API_BASE_URL}/api/movies/${movieId}/episodes`, {
+    cache: "no-store",
+    headers: {
+      ...getAuthHeaders(),
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch episodes");
+  }
+
+  return response.json();
+}
+
+export async function getEpisode(
+  movieId: number,
+  episodeId: number,
+): Promise<Episode> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/movies/${movieId}/episodes/${episodeId}`,
+    {
+      cache: "no-store",
+      headers: {
+        ...getAuthHeaders(),
+      },
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch episode");
+  }
+
+  return response.json();
+}
+
+export async function createEpisode(
+  movieId: number,
+  episode: EpisodeInput,
+): Promise<Episode> {
+  const response = await fetch(`${API_BASE_URL}/api/movies/${movieId}/episodes`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeaders(),
+    },
+    body: JSON.stringify(episode),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to create episode");
+  }
+
+  return response.json();
+}
+
+export async function updateEpisode(
+  movieId: number,
+  episodeId: number,
+  episode: EpisodeInput,
+): Promise<Episode> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/movies/${movieId}/episodes/${episodeId}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeaders(),
+      },
+      body: JSON.stringify(episode),
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to update episode");
+  }
+
+  return response.json();
+}
+
+export async function deleteEpisode(
+  movieId: number,
+  episodeId: number,
+): Promise<void> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/movies/${movieId}/episodes/${episodeId}`,
+    {
+      method: "DELETE",
+      headers: {
+        ...getAuthHeaders(),
+      },
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to delete episode");
   }
 }
 

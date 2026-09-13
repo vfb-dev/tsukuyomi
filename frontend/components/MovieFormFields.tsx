@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+
 import { MovieInput } from "@/types/movie";
 
 type MovieFormFieldsProps = {
@@ -5,6 +9,10 @@ type MovieFormFieldsProps = {
 };
 
 export function MovieFormFields({ defaultValues }: MovieFormFieldsProps) {
+  const [mediaType, setMediaType] = useState(
+    defaultValues?.mediaType ?? "MOVIE",
+  );
+
   return (
     <>
       <div className="grid gap-2">
@@ -104,7 +112,8 @@ export function MovieFormFields({ defaultValues }: MovieFormFieldsProps) {
           id="mediaType"
           name="mediaType"
           required
-          defaultValue={defaultValues?.mediaType ?? "MOVIE"}
+          value={mediaType}
+          onChange={(event) => setMediaType(event.target.value)}
           className="rounded border border-gray-800 bg-black px-3 py-2 text-sm text-white outline-none focus:border-red-600"
         >
           <option value="MOVIE">Movie</option>
@@ -132,22 +141,27 @@ export function MovieFormFields({ defaultValues }: MovieFormFieldsProps) {
         </p>
       </div>
 
-      <div className="grid gap-2">
-        <label htmlFor="videoUrl" className="text-sm font-medium text-gray-300">
-          Video URL
-        </label>
-        <input
-          id="videoUrl"
-          name="videoUrl"
-          type="text"
-          required
-          defaultValue={defaultValues?.videoUrl}
-          className="rounded border border-gray-800 bg-black px-3 py-2 text-sm text-white outline-none focus:border-red-600"
-        />
-        <p className="mt-1 text-xs text-zinc-500">
-          Local videos can use /media/videos/example.mp4
-        </p>
-      </div>
+      {mediaType === "MOVIE" && (
+        <div className="grid gap-2">
+          <label
+            htmlFor="videoUrl"
+            className="text-sm font-medium text-gray-300"
+          >
+            Movie Video URL
+          </label>
+          <input
+            id="videoUrl"
+            name="videoUrl"
+            type="text"
+            required
+            defaultValue={defaultValues?.videoUrl}
+            className="rounded border border-gray-800 bg-black px-3 py-2 text-sm text-white outline-none focus:border-red-600"
+          />
+          <p className="mt-1 text-xs text-zinc-500">
+            Local movie videos can use /media/videos/example.mp4
+          </p>
+        </div>
+      )}
     </>
   );
 }
