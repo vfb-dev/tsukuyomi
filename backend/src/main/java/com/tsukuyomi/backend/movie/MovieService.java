@@ -78,6 +78,7 @@ public class MovieService {
         movie.setReleaseYear(request.getReleaseYear());
         movie.setDurationMinutes(request.getDurationMinutes());
         movie.setPosterUrl(request.getPosterUrl());
+        movie.setBackdropUrl(request.getBackdropUrl());
         movie.setVideoUrl(getVideoUrl(request));
         movie.setCategory(request.getCategory());
         movie.setMediaType(mediaType);
@@ -96,6 +97,7 @@ public class MovieService {
         movie.setReleaseYear(request.getReleaseYear());
         movie.setDurationMinutes(request.getDurationMinutes());
         movie.setPosterUrl(request.getPosterUrl());
+        movie.setBackdropUrl(request.getBackdropUrl());
         movie.setVideoUrl(getVideoUrl(request));
         movie.setCategory(request.getCategory());
         movie.setMediaType(mediaType);
@@ -175,6 +177,7 @@ public class MovieService {
                 movie.getReleaseYear(),
                 movie.getDurationMinutes(),
                 movie.getPosterUrl(),
+                movie.getBackdropUrl(),
                 movie.getVideoUrl(),
                 movie.getCategory(),
                 getMediaType(movie),

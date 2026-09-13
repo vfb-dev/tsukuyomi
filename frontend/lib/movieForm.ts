@@ -11,6 +11,7 @@ export function getMovieInputFromFormData(formData: FormData): MovieInput {
     category: String(formData.get("category")),
     mediaType,
     posterUrl: String(formData.get("posterUrl")),
+    backdropUrl: String(formData.get("backdropUrl")),
     videoUrl:
       mediaType === "MOVIE" ? String(formData.get("videoUrl") ?? "") : "",
   };

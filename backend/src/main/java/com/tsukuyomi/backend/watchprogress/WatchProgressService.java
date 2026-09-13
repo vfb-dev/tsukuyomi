@@ -182,6 +182,7 @@ public class WatchProgressService {
                 movie.getReleaseYear(),
                 movie.getDurationMinutes(),
                 movie.getPosterUrl(),
+                movie.getBackdropUrl(),
                 movie.getVideoUrl(),
                 movie.getCategory(),
                 getMediaType(movie),

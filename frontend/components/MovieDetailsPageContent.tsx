@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { FavoriteButton } from "@/components/FavoriteButton";
+import { HeroImage } from "@/components/HeroImage";
 import { PosterImage } from "@/components/PosterImage";
 import { VideoPlayer } from "@/components/VideoPlayer";
 import {
@@ -152,14 +153,29 @@ export function MovieDetailsPageContent({
         Back to catalog
       </Link>
 
-      <div className="mt-8 grid gap-8 lg:grid-cols-[280px_1fr]">
-        <PosterImage
-          src={movie.posterUrl}
-          alt={movie.title}
-          className="aspect-[2/3] w-full rounded object-cover"
+      <div className="relative mt-8 min-h-[32rem] overflow-hidden rounded border border-zinc-800 bg-zinc-950">
+        <HeroImage
+          src={movie.backdropUrl || movie.posterUrl}
+          alt=""
+          className="object-cover object-center opacity-70"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-gradient-to-t from-black via-black/65 to-black/10"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/25 to-transparent"
         />
 
-        <div>
+        <div className="relative z-10 grid items-end gap-8 p-6 sm:p-8 lg:grid-cols-[280px_1fr]">
+          <PosterImage
+            src={movie.posterUrl}
+            alt={movie.title}
+            className="aspect-[2/3] w-full rounded object-cover shadow-2xl lg:max-w-[280px]"
+          />
+
+          <div>
           <div className="flex flex-wrap items-center gap-3">
             <span className="rounded bg-zinc-800 px-3 py-1 text-sm text-zinc-300">
               {movie.category}
@@ -198,6 +214,7 @@ export function MovieDetailsPageContent({
             </p>
           )}
         </div>
+      </div>
       </div>
 
       {!isAnime && movie.videoUrl && progress && (

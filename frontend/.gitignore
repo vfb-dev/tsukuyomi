@@ -43,6 +43,8 @@ next-env.d.ts
 # Local media files
 /public/media/videos/*
 /public/media/posters/*
+/public/media/hero/*
 !/public/media/videos/.gitkeep
 !/public/media/posters/.gitkeep
+!/public/media/hero/.gitkeep
 !/public/media/posters/placeholder.svg

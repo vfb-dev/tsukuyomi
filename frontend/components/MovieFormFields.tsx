@@ -141,6 +141,26 @@ export function MovieFormFields({ defaultValues }: MovieFormFieldsProps) {
         </p>
       </div>
 
+      <div className="grid gap-2">
+        <label
+          htmlFor="backdropUrl"
+          className="text-sm font-medium text-gray-300"
+        >
+          Hero Image URL
+        </label>
+        <input
+          id="backdropUrl"
+          name="backdropUrl"
+          type="text"
+          required
+          defaultValue={defaultValues?.backdropUrl ?? ""}
+          className="rounded border border-gray-800 bg-black px-3 py-2 text-sm text-white outline-none focus:border-red-600"
+        />
+        <p className="mt-1 text-xs text-zinc-500">
+          Use a wide image. Local files can use /media/backdrops/example.jpg
+        </p>
+      </div>
+
       {mediaType === "MOVIE" && (
         <div className="grid gap-2">
           <label

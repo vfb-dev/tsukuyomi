@@ -25,6 +25,9 @@ public class MovieRequest {
     @NotBlank
     private String posterUrl;
 
+    @NotBlank
+    private String backdropUrl;
+
     private String videoUrl;
 
     @NotBlank
@@ -81,6 +84,14 @@ public class MovieRequest {
 
     public void setPosterUrl(String posterUrl) {
         this.posterUrl = posterUrl;
+    }
+
+    public String getBackdropUrl() {
+        return backdropUrl;
+    }
+
+    public void setBackdropUrl(String backdropUrl) {
+        this.backdropUrl = backdropUrl;
     }
 
     public String getVideoUrl() {

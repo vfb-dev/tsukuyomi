@@ -7,6 +7,7 @@ public record MovieResponse(
         Integer releaseYear,
         Integer durationMinutes,
         String posterUrl,
+        String backdropUrl,
         String videoUrl,
         String category,
         String mediaType,

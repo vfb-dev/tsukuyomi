@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { HomeCatalogRow } from "@/components/HomeCatalogRow";
 import { HomeMovieRow } from "@/components/HomeMovieRow";
-import { PosterImage } from "@/components/PosterImage";
+import { HeroImage } from "@/components/HeroImage";
 import { getContinueWatching, getMovies } from "@/lib/api";
 import { Movie } from "@/types/movie";
 import { ContinueWatchingItem } from "@/types/watchProgress";
@@ -72,9 +72,9 @@ export function HomePageContent() {
       <section className="relative isolate min-h-[30rem] overflow-hidden border-b border-zinc-900 bg-black sm:min-h-[34rem]">
         {featuredMovie && (
           <div className="absolute inset-0 z-0">
-            <PosterImage
+            <HeroImage
               key={featuredMovie.id}
-              src={featuredMovie.posterUrl}
+              src={featuredMovie.backdropUrl || featuredMovie.posterUrl}
               alt=""
               className="h-full w-full object-cover object-center sm:object-[70%_center]"
             />

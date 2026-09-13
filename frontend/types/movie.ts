@@ -5,6 +5,7 @@ export type Movie = {
   releaseYear: number;
   durationMinutes: number;
   posterUrl: string;
+  backdropUrl: string | null;
   videoUrl: string;
   category: string;
   mediaType: string;
@@ -17,6 +18,7 @@ export type MovieInput = {
   releaseYear: number;
   durationMinutes: number;
   posterUrl: string;
+  backdropUrl: string | null;
   videoUrl: string;
   category: string;
   mediaType: string;

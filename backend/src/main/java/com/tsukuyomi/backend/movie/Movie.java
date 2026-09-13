@@ -17,6 +17,7 @@ public class Movie {
     private Integer releaseYear;
     private Integer durationMinutes;
     private String posterUrl;
+    private String backdropUrl;
     private String videoUrl;
     private String category;
     private String mediaType = "MOVIE";
@@ -70,6 +71,14 @@ public class Movie {
 
     public void setPosterUrl(String posterUrl) {
         this.posterUrl = posterUrl;
+    }
+
+    public String getBackdropUrl() {
+        return backdropUrl;
+    }
+
+    public void setBackdropUrl(String backdropUrl) {
+        this.backdropUrl = backdropUrl;
     }
 
     public String getVideoUrl() {
