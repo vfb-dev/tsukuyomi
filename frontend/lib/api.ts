@@ -1,6 +1,6 @@
 import { getAuthToken } from "@/lib/auth";
 import { AuthUser, LoginInput, LoginResponse } from "@/types/auth";
-import { Movie } from "@/types/movie";
+import { Movie, MovieInput } from "@/types/movie";
 import {
   ContinueWatchingItem,
   WatchProgress,
@@ -21,16 +21,6 @@ function getAuthHeaders() {
     Authorization: `Bearer ${token}`,
   };
 }
-
-export type MovieInput = {
-  title: string;
-  description: string;
-  releaseYear: number;
-  durationMinutes: number;
-  posterUrl: string;
-  videoUrl: string;
-  category: string;
-};
 
 type GetMoviesParams = {
   search?: string;
@@ -62,6 +52,9 @@ export async function getMovies(
 
   const response = await fetch(url, {
     cache: "no-store",
+    headers: {
+      ...getAuthHeaders(),
+    },
   });
 
   if (!response.ok) {
@@ -74,6 +67,9 @@ export async function getMovies(
 export async function getMovie(id: number): Promise<Movie | null> {
   const response = await fetch(`${API_BASE_URL}/api/movies/${id}`, {
     cache: "no-store",
+    headers: {
+      ...getAuthHeaders(),
+    },
   });
 
   if (response.status === 404) {
@@ -159,6 +155,9 @@ export async function getWatchProgress(
     `${API_BASE_URL}/api/movies/${movieId}/progress`,
     {
       cache: "no-store",
+      headers: {
+        ...getAuthHeaders(),
+      },
     },
   );
 
@@ -172,6 +171,9 @@ export async function getWatchProgress(
 export async function getContinueWatching(): Promise<ContinueWatchingItem[]> {
   const response = await fetch(`${API_BASE_URL}/api/watch-progress/continue`, {
     cache: "no-store",
+    headers: {
+      ...getAuthHeaders(),
+    },
   });
 
   if (!response.ok) {
@@ -184,6 +186,9 @@ export async function getContinueWatching(): Promise<ContinueWatchingItem[]> {
 export async function getCompletedWatching(): Promise<ContinueWatchingItem[]> {
   const response = await fetch(`${API_BASE_URL}/api/watch-progress/completed`, {
     cache: "no-store",
+    headers: {
+      ...getAuthHeaders(),
+    },
   });
 
   if (!response.ok) {

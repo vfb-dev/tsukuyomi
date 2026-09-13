@@ -31,7 +31,8 @@ export function MovieCard({ movie }: MovieCardProps) {
         </div>
 
         <p className="mt-1 text-sm text-zinc-500">
-          {movie.releaseYear} • {movie.category}
+          {movie.releaseYear} •{" "}
+          {movie.mediaType === "ANIME" ? "Anime" : "Movie"} • {movie.category}
         </p>
       </div>
     </Link>

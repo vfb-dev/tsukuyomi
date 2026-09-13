@@ -7,7 +7,11 @@ import { MovieFormFields } from "@/components/MovieFormFields";
 import { createMovie } from "@/lib/api";
 import { getMovieInputFromFormData } from "@/lib/movieForm";
 
-export function CreateMovieForm() {
+type CreateMovieFormProps = {
+  onMovieCreated?: () => void;
+};
+
+export function CreateMovieForm({ onMovieCreated }: CreateMovieFormProps) {
   const router = useRouter();
   const [status, setStatus] = useState<"idle" | "saving" | "success" | "error">(
     "idle",
@@ -26,6 +30,7 @@ export function CreateMovieForm() {
       await createMovie(movieInput);
 
       form.reset();
+      onMovieCreated?.();
       router.refresh();
       setStatus("success");
     } catch {

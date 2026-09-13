@@ -1,4 +1,4 @@
-import { MovieInput } from "@/lib/api";
+import { MovieInput } from "@/types/movie";
 
 type MovieFormFieldsProps = {
   defaultValues?: Partial<MovieInput>;
@@ -91,6 +91,25 @@ export function MovieFormFields({ defaultValues }: MovieFormFieldsProps) {
             className="rounded border border-gray-800 bg-black px-3 py-2 text-sm text-white outline-none focus:border-red-600"
           />
         </div>
+      </div>
+
+      <div className="grid gap-2">
+        <label
+          htmlFor="mediaType"
+          className="text-sm font-medium text-gray-300"
+        >
+          Type
+        </label>
+        <select
+          id="mediaType"
+          name="mediaType"
+          required
+          defaultValue={defaultValues?.mediaType ?? "MOVIE"}
+          className="rounded border border-gray-800 bg-black px-3 py-2 text-sm text-white outline-none focus:border-red-600"
+        >
+          <option value="MOVIE">Movie</option>
+          <option value="ANIME">Anime</option>
+        </select>
       </div>
 
       <div className="grid gap-2">

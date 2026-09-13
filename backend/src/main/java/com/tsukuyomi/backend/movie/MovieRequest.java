@@ -29,6 +29,9 @@ public class MovieRequest {
     @NotBlank
     private String category;
 
+    @NotBlank
+    private String mediaType;
+
     public String getTitle() {
         return title;
     }
@@ -83,5 +86,13 @@ public class MovieRequest {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public String getMediaType() {
+        return mediaType;
+    }
+
+    public void setMediaType(String mediaType) {
+        this.mediaType = mediaType;
     }
 }

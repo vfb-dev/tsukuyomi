@@ -19,6 +19,7 @@ public class Movie {
     private String posterUrl;
     private String videoUrl;
     private String category;
+    private String mediaType = "MOVIE";
     private Boolean favorite = false;
 
     public Movie() {
@@ -86,6 +87,14 @@ public class Movie {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public String getMediaType() {
+        return mediaType;
+    }
+
+    public void setMediaType(String mediaType) {
+        this.mediaType = mediaType;
     }
 
     public Boolean getFavorite() {

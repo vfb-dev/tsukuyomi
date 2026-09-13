@@ -29,8 +29,8 @@ public class SecurityConfig {
                                 "/api/health",
                                 "/api/auth/login"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/movies/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/watch-progress/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/movies/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/watch-progress/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/movies/*/progress").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/movies").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/movies/*").hasRole("ADMIN")

@@ -57,6 +57,7 @@ public class MovieService {
         movie.setPosterUrl(request.getPosterUrl());
         movie.setVideoUrl(request.getVideoUrl());
         movie.setCategory(request.getCategory());
+        movie.setMediaType(request.getMediaType());
         movie.setFavorite(false);
 
         Movie savedMovie = movieRepository.save(movie);
@@ -74,6 +75,7 @@ public class MovieService {
         movie.setPosterUrl(request.getPosterUrl());
         movie.setVideoUrl(request.getVideoUrl());
         movie.setCategory(request.getCategory());
+        movie.setMediaType(request.getMediaType());
 
         Movie updatedMovie = movieRepository.save(movie);
 
@@ -112,7 +114,16 @@ public class MovieService {
                 movie.getPosterUrl(),
                 movie.getVideoUrl(),
                 movie.getCategory(),
+                getMediaType(movie),
                 movie.getFavorite()
         );
+    }
+
+    private String getMediaType(Movie movie) {
+        if (movie.getMediaType() == null || movie.getMediaType().isBlank()) {
+            return "MOVIE";
+        }
+
+        return movie.getMediaType();
     }
 }

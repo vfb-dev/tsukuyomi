@@ -7,9 +7,10 @@ import { deleteMovie } from "../lib/api";
 
 type DeleteMovieButtonProps = {
   movieId: number;
+  onDeleted?: () => void;
 };
 
-export function DeleteMovieButton({ movieId }: DeleteMovieButtonProps) {
+export function DeleteMovieButton({ movieId, onDeleted }: DeleteMovieButtonProps) {
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -27,6 +28,7 @@ export function DeleteMovieButton({ movieId }: DeleteMovieButtonProps) {
 
       await deleteMovie(movieId);
 
+      onDeleted?.();
       router.refresh();
     } catch {
       setHasError(true);

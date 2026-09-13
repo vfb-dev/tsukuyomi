@@ -35,15 +35,15 @@ public class WatchProgressService {
     }
 
     public List<ContinueWatchingResponse> getCompletedWatching() {
-    return watchProgressRepository
-            .findByCompletedTrueOrderByIdDesc()
-            .stream()
-            .map(progress -> new ContinueWatchingResponse(
-                    toMovieResponse(progress.getMovie()),
-                    toResponse(progress)
-            ))
-            .toList();
-}
+        return watchProgressRepository
+                .findByCompletedTrueOrderByIdDesc()
+                .stream()
+                .map(progress -> new ContinueWatchingResponse(
+                        toMovieResponse(progress.getMovie()),
+                        toResponse(progress)
+                ))
+                .toList();
+    }
 
     public WatchProgressResponse getProgress(Long movieId) {
         WatchProgress progress = watchProgressRepository
@@ -97,7 +97,16 @@ public class WatchProgressService {
                 movie.getPosterUrl(),
                 movie.getVideoUrl(),
                 movie.getCategory(),
+                getMediaType(movie),
                 movie.getFavorite()
         );
+    }
+
+    private String getMediaType(Movie movie) {
+        if (movie.getMediaType() == null || movie.getMediaType().isBlank()) {
+            return "MOVIE";
+        }
+
+        return movie.getMediaType();
     }
 }

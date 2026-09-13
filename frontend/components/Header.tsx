@@ -10,7 +10,7 @@ export function Header() {
 
         <div className="flex items-center gap-5 text-sm text-gray-300">
           <Link href="/movies" className="hover:text-white">
-            Movies
+            Catalog
           </Link>
 
           <Link href="/favorites" className="hover:text-white">

@@ -1,4 +1,4 @@
-import { MovieInput } from "@/lib/api";
+import { MovieInput } from "@/types/movie";
 
 export function getMovieInputFromFormData(formData: FormData): MovieInput {
   return {
@@ -7,6 +7,7 @@ export function getMovieInputFromFormData(formData: FormData): MovieInput {
     releaseYear: Number(formData.get("releaseYear")),
     durationMinutes: Number(formData.get("durationMinutes")),
     category: String(formData.get("category")),
+    mediaType: String(formData.get("mediaType") || "MOVIE"),
     posterUrl: String(formData.get("posterUrl")),
     videoUrl: String(formData.get("videoUrl")),
   };

@@ -9,6 +9,7 @@ public record MovieResponse(
         String posterUrl,
         String videoUrl,
         String category,
+        String mediaType,
         Boolean favorite
 ) {
 }
