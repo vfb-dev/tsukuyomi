@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Heart, SearchX } from "lucide-react";
 
 import { MovieCard } from "@/components/MovieCard";
 import { getMovies } from "@/lib/api";
@@ -27,27 +28,64 @@ export function FavoritesPageContent() {
   }, []);
 
   return (
-    <section className="px-8 py-10">
-      <h1 className="text-3xl font-bold">Favorites</h1>
+    <section className="mx-auto max-w-7xl px-4 py-10 sm:px-8">
+      <div className="border-b border-zinc-900 pb-8">
+        <div className="flex flex-wrap items-center gap-3">
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+            Favorites
+          </h1>
+          {!isLoading && !hasError && (
+            <span className="rounded-full border border-zinc-800 bg-zinc-950 px-3 py-1 text-xs font-semibold text-zinc-400">
+              {movies.length} {movies.length === 1 ? "title" : "titles"}
+            </span>
+          )}
+        </div>
 
-      <p className="mt-2 text-sm text-gray-400">
-        Catalog items you marked as favorites.
-      </p>
+        <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-400">
+          Your personal shortlist of movies and anime worth coming back to.
+        </p>
+      </div>
 
       {isLoading && (
-        <p className="mt-8 text-sm text-zinc-500">Loading favorites...</p>
+        <div className="mt-8 grid gap-x-4 gap-y-8 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
+          {Array.from({ length: 5 }, (_, index) => (
+            <div
+              key={index}
+              className="overflow-hidden rounded border border-zinc-900 bg-zinc-950"
+            >
+              <div className="aspect-[2/3] animate-pulse bg-zinc-900" />
+              <div className="space-y-3 p-4">
+                <div className="h-4 animate-pulse rounded bg-zinc-900" />
+                <div className="h-3 w-2/3 animate-pulse rounded bg-zinc-900" />
+              </div>
+            </div>
+          ))}
+        </div>
       )}
 
       {hasError && (
-        <p className="mt-8 text-sm text-red-400">Could not load favorites.</p>
+        <div className="mt-10 flex flex-col items-center border-y border-zinc-900 py-16 text-center">
+          <SearchX aria-hidden="true" className="h-8 w-8 text-zinc-700" />
+          <p className="mt-4 text-sm text-red-400">
+            Could not load your favorites.
+          </p>
+        </div>
       )}
 
       {!isLoading && !hasError && movies.length === 0 && (
-        <p className="mt-8 text-gray-400">No favorite items yet.</p>
+        <div className="mt-10 flex flex-col items-center border-y border-zinc-900 py-16 text-center">
+          <Heart aria-hidden="true" className="h-8 w-8 text-zinc-700" />
+          <h2 className="mt-4 text-lg font-semibold text-white">
+            Your favorites are empty
+          </h2>
+          <p className="mt-2 max-w-sm text-sm text-zinc-500">
+            Save titles from the catalog and they will appear here.
+          </p>
+        </div>
       )}
 
       {!isLoading && !hasError && movies.length > 0 && (
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-8 grid gap-x-4 gap-y-8 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
           {movies.map((movie) => (
             <MovieCard key={movie.id} movie={movie} />
           ))}
