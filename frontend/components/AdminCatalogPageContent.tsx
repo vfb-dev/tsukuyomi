@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Film, Pencil, Plus, RefreshCw, Tv } from "lucide-react";
 
-import { CreateMovieForm } from "@/components/CreateMovieForm";
 import { DeleteMovieButton } from "@/components/DeleteMovieButton";
+import { PosterImage } from "@/components/PosterImage";
 import { getMovies } from "@/lib/api";
 import { Movie } from "@/types/movie";
 
@@ -15,6 +16,7 @@ export function AdminCatalogPageContent() {
 
   async function loadMovies() {
     try {
+      setIsLoading(true);
       setHasError(false);
       const loadedMovies = await getMovies();
       setMovies(loadedMovies);
@@ -41,85 +43,158 @@ export function AdminCatalogPageContent() {
   }, []);
 
   return (
-    <section className="px-8 py-10">
-      <div>
-        <h1 className="text-3xl font-bold">Admin Catalog</h1>
-        <p className="mt-2 text-sm text-gray-400">
-          Create and manage movies and anime in your catalog.
-        </p>
-      </div>
+    <section className="mx-auto max-w-7xl px-4 py-10 sm:px-8">
+      <header className="flex flex-col gap-5 border-b border-zinc-900 pb-6 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+            Admin catalog
+          </h1>
+          <p className="mt-2 text-sm text-zinc-500">
+            Manage the movies and anime in your library.
+          </p>
+        </div>
 
-      <CreateMovieForm onMovieCreated={loadMovies} />
+        <Link
+          href="/admin/movies/new"
+          className="inline-flex items-center justify-center gap-2 self-start rounded bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-500 sm:self-auto"
+        >
+          <Plus aria-hidden="true" className="h-4 w-4" />
+          Add title
+        </Link>
+      </header>
 
-      <section className="mt-10">
-        <h2 className="text-xl font-semibold">Existing Catalog Items</h2>
+      <section className="mt-8 min-w-0">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <h2 className="text-lg font-semibold text-white">Catalog</h2>
+              {!isLoading && !hasError && (
+                <span className="text-xs text-zinc-600">
+                  {movies.length} {movies.length === 1 ? "title" : "titles"}
+                </span>
+              )}
+            </div>
 
-        {isLoading && (
-          <p className="mt-4 text-sm text-zinc-500">Loading catalog...</p>
-        )}
-
-        {hasError && (
-          <p className="mt-4 text-sm text-red-400">Could not load catalog.</p>
-        )}
-
-        {!isLoading && !hasError && movies.length === 0 && (
-          <p className="mt-4 text-gray-400">No catalog items created yet.</p>
-        )}
-
-        {!isLoading && !hasError && movies.length > 0 && (
-          <div className="mt-4 overflow-hidden rounded border border-gray-800">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-zinc-950 text-gray-400">
-                <tr>
-                  <th className="px-4 py-3 font-medium">Title</th>
-                  <th className="px-4 py-3 font-medium">Type</th>
-                  <th className="px-4 py-3 font-medium">Category</th>
-                  <th className="px-4 py-3 font-medium">Year</th>
-                  <th className="px-4 py-3 font-medium">Duration</th>
-                  <th className="px-4 py-3 font-medium">Actions</th>
-                </tr>
-              </thead>
-
-              <tbody className="divide-y divide-gray-800">
-                {movies.map((movie) => (
-                  <tr key={movie.id} className="bg-black">
-                    <td className="px-4 py-3 font-medium text-white">
-                      {movie.title}
-                    </td>
-                    <td className="px-4 py-3 text-gray-300">
-                      {movie.mediaType === "ANIME" ? "Anime" : "Movie"}
-                    </td>
-                    <td className="px-4 py-3 text-gray-300">
-                      {movie.category}
-                    </td>
-                    <td className="px-4 py-3 text-gray-300">
-                      {movie.releaseYear}
-                    </td>
-                    <td className="px-4 py-3 text-gray-300">
-                      {movie.durationMinutes} min
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        <Link
-                          href={`/admin/movies/${movie.id}/edit`}
-                          className="text-sm font-medium text-gray-300 hover:text-white"
-                        >
-                          Edit
-                        </Link>
-
-                        <DeleteMovieButton
-                          movieId={movie.id}
-                          onDeleted={loadMovies}
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <button
+              type="button"
+              onClick={() => void loadMovies()}
+              disabled={isLoading}
+              aria-label="Refresh catalog"
+              title="Refresh catalog"
+              className="inline-flex h-9 w-9 items-center justify-center rounded border border-zinc-800 text-zinc-500 transition hover:border-zinc-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <RefreshCw
+                aria-hidden="true"
+                className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
+              />
+            </button>
           </div>
-        )}
+
+          {hasError && (
+            <div className="mt-5 border-y border-zinc-900 py-8">
+              <p className="text-sm text-red-400">Could not load catalog.</p>
+              <button
+                type="button"
+                onClick={() => void loadMovies()}
+                className="mt-3 text-xs font-semibold text-zinc-400 underline underline-offset-4 transition hover:text-white"
+              >
+                Try again
+              </button>
+            </div>
+          )}
+
+          {isLoading && (
+            <div className="mt-5 overflow-hidden border-y border-zinc-900">
+              {Array.from({ length: 5 }, (_, index) => (
+                <div
+                  key={index}
+                  className="flex items-center gap-4 border-b border-zinc-900 py-4 last:border-b-0"
+                >
+                  <div className="h-14 w-10 shrink-0 animate-pulse bg-zinc-900" />
+                  <div className="min-w-0 flex-1 space-y-2">
+                    <div className="h-4 w-1/2 animate-pulse rounded bg-zinc-900" />
+                    <div className="h-3 w-1/3 animate-pulse rounded bg-zinc-900" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {!isLoading && !hasError && movies.length === 0 && (
+            <div className="mt-5 border-y border-zinc-900 py-12 text-center">
+              <Film aria-hidden="true" className="mx-auto h-7 w-7 text-zinc-700" />
+              <p className="mt-3 text-sm text-zinc-500">Your catalog is empty.</p>
+            </div>
+          )}
+
+          {!isLoading && !hasError && movies.length > 0 && (
+            <div className="mt-5 overflow-x-auto border-y border-zinc-900">
+              <table className="min-w-[720px] w-full text-left text-sm">
+                <thead className="text-xs uppercase tracking-wide text-zinc-600">
+                  <tr>
+                    <th className="px-2 py-3 font-semibold">Title</th>
+                    <th className="px-2 py-3 font-semibold">Type</th>
+                    <th className="px-2 py-3 font-semibold">Category</th>
+                    <th className="px-2 py-3 font-semibold">Year</th>
+                    <th className="px-2 py-3 font-semibold">Duration</th>
+                    <th className="px-2 py-3 font-semibold">Actions</th>
+                  </tr>
+                </thead>
+
+                <tbody className="divide-y divide-zinc-900">
+                  {movies.map((movie) => (
+                    <tr key={movie.id} className="transition hover:bg-zinc-950">
+                      <td className="px-2 py-3">
+                        <div className="flex items-center gap-3">
+                          <PosterImage
+                            src={movie.posterUrl}
+                            alt=""
+                            className="h-14 w-10 shrink-0 rounded object-cover"
+                          />
+                          <span className="max-w-48 truncate font-medium text-white">
+                            {movie.title}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-2 py-3">
+                        <span className="inline-flex items-center gap-1.5 text-xs text-zinc-400">
+                          {movie.mediaType === "ANIME" ? (
+                            <Tv aria-hidden="true" className="h-3.5 w-3.5 text-red-400" />
+                          ) : (
+                            <Film aria-hidden="true" className="h-3.5 w-3.5" />
+                          )}
+                          {movie.mediaType === "ANIME" ? "Anime" : "Movie"}
+                        </span>
+                      </td>
+                      <td className="px-2 py-3 text-zinc-500">{movie.category}</td>
+                      <td className="px-2 py-3 text-zinc-500">{movie.releaseYear}</td>
+                      <td className="px-2 py-3 text-zinc-500">
+                        {movie.durationMinutes} min
+                      </td>
+                      <td className="px-2 py-3">
+                        <div className="flex items-center gap-3">
+                          <Link
+                            href={`/admin/movies/${movie.id}/edit`}
+                            aria-label={`Edit ${movie.title}`}
+                            title={`Edit ${movie.title}`}
+                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-400 transition hover:text-white"
+                          >
+                            <Pencil aria-hidden="true" className="h-3.5 w-3.5" />
+                            Edit
+                          </Link>
+                          <DeleteMovieButton
+                            movieId={movie.id}
+                            onDeleted={loadMovies}
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
       </section>
+
     </section>
   );
 }

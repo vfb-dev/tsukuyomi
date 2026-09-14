@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Trash2 } from "lucide-react";
 
 import { deleteMovie } from "../lib/api";
 
@@ -43,8 +44,10 @@ export function DeleteMovieButton({ movieId, onDeleted }: DeleteMovieButtonProps
         type="button"
         onClick={handleDelete}
         disabled={isDeleting}
-        className="rounded border border-red-900 px-3 py-1 text-sm text-red-400 hover:border-red-600 hover:text-red-300 disabled:cursor-not-allowed disabled:border-gray-800 disabled:text-gray-500"
+        title="Delete item"
+        className="inline-flex items-center gap-1.5 rounded border border-red-900 px-3 py-1 text-xs font-semibold text-red-400 transition hover:border-red-600 hover:text-red-300 disabled:cursor-not-allowed disabled:border-gray-800 disabled:text-gray-500"
       >
+        <Trash2 aria-hidden="true" className="h-3.5 w-3.5" />
         {isDeleting ? "Deleting..." : "Delete"}
       </button>
 

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Plus } from "lucide-react";
 
 import { MovieFormFields } from "@/components/MovieFormFields";
 import { createMovie } from "@/lib/api";
@@ -41,15 +42,16 @@ export function CreateMovieForm({ onMovieCreated }: CreateMovieFormProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mt-8 grid gap-4 rounded border border-gray-800 bg-zinc-950 p-6"
+      className="mt-5 grid gap-4 rounded border border-gray-800 bg-zinc-950 p-6"
     >
       <MovieFormFields />
 
       <button
         type="submit"
         disabled={status === "saving"}
-        className="mt-2 rounded bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-gray-700"
+        className="mt-2 inline-flex items-center justify-center gap-2 rounded bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-gray-700"
       >
+        <Plus aria-hidden="true" className="h-4 w-4" />
         {status === "saving" ? "Creating..." : "Create item"}
       </button>
 
