@@ -48,7 +48,11 @@ public class MovieService {
                     category
             );
         } else if (hasSearch) {
-            movies = movieRepository.findByTitleContainingIgnoreCaseOrderByReleaseYearDesc(search);
+            movies = movieRepository
+                    .findByTitleContainingIgnoreCaseOrCategoryContainingIgnoreCaseOrderByReleaseYearDesc(
+                            search,
+                            search
+                    );
         } else if (hasCategory) {
             movies = movieRepository.findByCategoryIgnoreCaseOrderByReleaseYearDesc(category);
         } else {
