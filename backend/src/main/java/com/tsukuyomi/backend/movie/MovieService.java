@@ -8,24 +8,37 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tsukuyomi.backend.episode.Episode;
+import com.tsukuyomi.backend.episode.EpisodeRepository;
+import com.tsukuyomi.backend.episodeprogress.EpisodeWatchProgressRepository;
 import com.tsukuyomi.backend.favorite.Favorite;
 import com.tsukuyomi.backend.favorite.FavoriteRepository;
 import com.tsukuyomi.backend.user.AppUser;
 import com.tsukuyomi.backend.user.AppUserRepository;
+import com.tsukuyomi.backend.watchprogress.WatchProgressRepository;
 
 @Service
 public class MovieService {
 
     private final MovieRepository movieRepository;
+    private final EpisodeRepository episodeRepository;
+    private final EpisodeWatchProgressRepository episodeWatchProgressRepository;
+    private final WatchProgressRepository watchProgressRepository;
     private final FavoriteRepository favoriteRepository;
     private final AppUserRepository appUserRepository;
 
     public MovieService(
             MovieRepository movieRepository,
+            EpisodeRepository episodeRepository,
+            EpisodeWatchProgressRepository episodeWatchProgressRepository,
+            WatchProgressRepository watchProgressRepository,
             FavoriteRepository favoriteRepository,
             AppUserRepository appUserRepository
     ) {
         this.movieRepository = movieRepository;
+        this.episodeRepository = episodeRepository;
+        this.episodeWatchProgressRepository = episodeWatchProgressRepository;
+        this.watchProgressRepository = watchProgressRepository;
         this.favoriteRepository = favoriteRepository;
         this.appUserRepository = appUserRepository;
     }
@@ -139,8 +152,27 @@ public class MovieService {
     public void deleteMovie(Long id) {
         Movie movie = findMovieById(id);
 
+        List<Episode> episodes = episodeRepository
+                .findByMovieIdOrderBySeasonNumberAscEpisodeNumberAsc(id);
+
+        for (Episode episode : episodes) {
+            episodeWatchProgressRepository.deleteAll(
+                    episodeWatchProgressRepository.findByEpisodeId(episode.getId())
+            );
+        }
+
+        episodeWatchProgressRepository.flush();
+        episodeRepository.deleteAll(episodes);
+        episodeRepository.flush();
+
+        watchProgressRepository.deleteAll(watchProgressRepository.findByMovieId(id));
+        watchProgressRepository.flush();
+
         favoriteRepository.deleteAll(favoriteRepository.findByMovieId(id));
+        favoriteRepository.flush();
+
         movieRepository.delete(movie);
+        movieRepository.flush();
     }
 
     private Movie findMovieById(Long id) {
