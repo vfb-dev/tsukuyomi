@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Heart } from "lucide-react";
 
 import { toggleMovieFavorite } from "@/lib/api";
 
@@ -41,8 +42,12 @@ export function FavoriteButton({
         type="button"
         onClick={handleToggle}
         disabled={isSaving}
-        className="rounded border border-yellow-500/50 px-4 py-2 text-sm font-semibold text-yellow-300 hover:border-yellow-400 hover:text-yellow-200 disabled:cursor-not-allowed disabled:border-gray-800 disabled:text-gray-500"
+        className="inline-flex items-center gap-2 rounded border border-yellow-500/50 bg-black/30 px-4 py-3 text-sm font-semibold text-yellow-300 transition hover:border-yellow-400 hover:text-yellow-200 disabled:cursor-not-allowed disabled:border-gray-800 disabled:text-gray-500"
       >
+        <Heart
+          aria-hidden="true"
+          className={`h-4 w-4 ${isFavorite ? "fill-current" : ""}`}
+        />
         {isSaving
           ? "Saving..."
           : isFavorite

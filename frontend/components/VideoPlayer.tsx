@@ -10,12 +10,14 @@ type VideoPlayerProps = {
   videoUrl: string;
   initialProgressSeconds: number;
   onSaveProgress: (progress: WatchProgressInput) => Promise<void>;
+  className?: string;
 };
 
 export function VideoPlayer({
   videoUrl,
   initialProgressSeconds,
   onSaveProgress,
+  className,
 }: VideoPlayerProps) {
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
 
@@ -53,14 +55,14 @@ export function VideoPlayer({
   }
 
   return (
-    <div className="mt-10">
+    <div className={className ?? "mt-10"}>
       <video
         src={videoUrl}
         controls
         onLoadedMetadata={handleLoadedMetadata}
         onPause={handlePause}
         onEnded={handleEnded}
-        className="aspect-video w-full rounded bg-zinc-950"
+        className="aspect-video w-full rounded border border-zinc-800 bg-black"
       />
 
       <p className="mt-2 text-sm text-zinc-500">
