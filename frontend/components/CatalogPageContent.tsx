@@ -19,6 +19,7 @@ export function CatalogPageContent() {
     useState<MediaTypeFilter>("ALL");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [hasError, setHasError] = useState(false);
 
   const loadMovies = useCallback(
@@ -27,7 +28,7 @@ export function CatalogPageContent() {
       nextCategory = activeCategory,
     ) {
       try {
-        setIsLoading(true);
+        setIsRefreshing(true);
         setHasError(false);
 
         const loadedMovies = await getMovies({
@@ -39,7 +40,7 @@ export function CatalogPageContent() {
       } catch {
         setHasError(true);
       } finally {
-        setIsLoading(false);
+        setIsRefreshing(false);
       }
     },
     [activeCategory, activeSearch],
@@ -299,24 +300,7 @@ export function CatalogPageContent() {
         </div>
       </div>
 
-      {isLoading && (
-        <div className="mt-8 grid gap-x-4 gap-y-8 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
-          {Array.from({ length: 10 }, (_, index) => (
-            <div
-              key={index}
-              className="overflow-hidden rounded border border-zinc-900 bg-zinc-950"
-            >
-              <div className="aspect-[2/3] animate-pulse bg-zinc-900" />
-              <div className="space-y-3 p-4">
-                <div className="h-4 animate-pulse rounded bg-zinc-900" />
-                <div className="h-3 w-2/3 animate-pulse rounded bg-zinc-900" />
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {hasError && (
+      {hasError && movies.length === 0 && !isRefreshing && (
         <div className="mt-10 flex flex-col items-center border-y border-zinc-900 py-16 text-center">
           <SearchX aria-hidden="true" className="h-8 w-8 text-zinc-700" />
           <p className="mt-4 text-sm text-red-400">Could not load catalog.</p>
@@ -330,7 +314,7 @@ export function CatalogPageContent() {
         </div>
       )}
 
-      {!isLoading && !hasError && visibleMovies.length === 0 && (
+      {!isLoading && !isRefreshing && !hasError && visibleMovies.length === 0 && (
         <div className="mt-10 flex flex-col items-center border-y border-zinc-900 py-16 text-center">
           <SearchX aria-hidden="true" className="h-8 w-8 text-zinc-700" />
           <h2 className="mt-4 text-lg font-semibold text-white">
@@ -353,7 +337,7 @@ export function CatalogPageContent() {
         </div>
       )}
 
-      {!isLoading && !hasError && visibleMovies.length > 0 && (
+      {!isLoading && movies.length > 0 && visibleMovies.length > 0 && (
         <>
           <div className="mt-8 flex items-center justify-between gap-4">
             <p className="text-xs font-medium text-zinc-500">
@@ -366,6 +350,9 @@ export function CatalogPageContent() {
                 </>
               )}
             </p>
+            {isRefreshing && (
+              <span className="text-xs text-zinc-600">Updating...</span>
+            )}
           </div>
 
           <div className="mt-4 grid gap-x-4 gap-y-8 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">

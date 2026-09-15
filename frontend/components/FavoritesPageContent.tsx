@@ -46,23 +46,6 @@ export function FavoritesPageContent() {
         </p>
       </div>
 
-      {isLoading && (
-        <div className="mt-8 grid gap-x-4 gap-y-8 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
-          {Array.from({ length: 5 }, (_, index) => (
-            <div
-              key={index}
-              className="overflow-hidden rounded border border-zinc-900 bg-zinc-950"
-            >
-              <div className="aspect-[2/3] animate-pulse bg-zinc-900" />
-              <div className="space-y-3 p-4">
-                <div className="h-4 animate-pulse rounded bg-zinc-900" />
-                <div className="h-3 w-2/3 animate-pulse rounded bg-zinc-900" />
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
       {hasError && (
         <div className="mt-10 flex flex-col items-center border-y border-zinc-900 py-16 text-center">
           <SearchX aria-hidden="true" className="h-8 w-8 text-zinc-700" />

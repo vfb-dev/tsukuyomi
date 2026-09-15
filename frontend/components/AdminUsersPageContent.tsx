@@ -19,6 +19,7 @@ type FormStatus = "idle" | "saving" | "success" | "error";
 export function AdminUsersPageContent() {
   const [users, setUsers] = useState<AppUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [formStatus, setFormStatus] = useState<FormStatus>("idle");
   const [createError, setCreateError] = useState("");
@@ -28,14 +29,14 @@ export function AdminUsersPageContent() {
 
   async function loadUsers() {
     try {
-      setIsLoading(true);
+      setIsRefreshing(true);
       setHasError(false);
       const loadedUsers = await getUsers();
       setUsers(loadedUsers);
     } catch {
       setHasError(true);
     } finally {
-      setIsLoading(false);
+      setIsRefreshing(false);
     }
   }
 
@@ -160,14 +161,14 @@ export function AdminUsersPageContent() {
             <button
               type="button"
               onClick={() => void loadUsers()}
-              disabled={isLoading}
+              disabled={isLoading || isRefreshing}
               aria-label="Refresh users"
               title="Refresh users"
               className="inline-flex h-9 w-9 items-center justify-center rounded border border-zinc-800 text-zinc-500 transition hover:border-zinc-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
             >
               <RefreshCw
                 aria-hidden="true"
-                className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
+                className={`h-4 w-4 ${isLoading || isRefreshing ? "animate-spin" : ""}`}
               />
             </button>
           </div>
@@ -178,7 +179,7 @@ export function AdminUsersPageContent() {
             </p>
           )}
 
-          {hasError && (
+          {hasError && users.length === 0 && !isRefreshing && (
             <div className="mt-5 border-y border-zinc-900 py-8">
               <p className="text-sm text-red-400">Could not load users.</p>
               <button
@@ -191,31 +192,14 @@ export function AdminUsersPageContent() {
             </div>
           )}
 
-          {isLoading && (
-            <div className="mt-5 overflow-hidden border-y border-zinc-900">
-              {Array.from({ length: 4 }, (_, index) => (
-                <div
-                  key={index}
-                  className="flex items-center gap-4 border-b border-zinc-900 py-4 last:border-b-0"
-                >
-                  <div className="h-9 w-9 animate-pulse rounded-full bg-zinc-900" />
-                  <div className="flex-1 space-y-2">
-                    <div className="h-4 w-1/3 animate-pulse rounded bg-zinc-900" />
-                    <div className="h-3 w-1/5 animate-pulse rounded bg-zinc-900" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {!isLoading && !hasError && users.length === 0 && (
+          {!isLoading && !isRefreshing && !hasError && users.length === 0 && (
             <div className="mt-5 border-y border-zinc-900 py-12 text-center">
               <UsersRound aria-hidden="true" className="mx-auto h-7 w-7 text-zinc-700" />
               <p className="mt-3 text-sm text-zinc-500">No users yet.</p>
             </div>
           )}
 
-          {!isLoading && !hasError && users.length > 0 && (
+          {!isLoading && users.length > 0 && (
             <div className="mt-5 overflow-x-auto border-y border-zinc-900">
               <table className="min-w-[560px] w-full text-left text-sm">
                 <thead className="text-xs uppercase tracking-wide text-zinc-600">

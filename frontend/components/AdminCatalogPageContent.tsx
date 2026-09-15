@@ -12,18 +12,19 @@ import { Movie } from "@/types/movie";
 export function AdminCatalogPageContent() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [hasError, setHasError] = useState(false);
 
   async function loadMovies() {
     try {
-      setIsLoading(true);
+      setIsRefreshing(true);
       setHasError(false);
       const loadedMovies = await getMovies();
       setMovies(loadedMovies);
     } catch {
       setHasError(true);
     } finally {
-      setIsLoading(false);
+      setIsRefreshing(false);
     }
   }
 
@@ -77,19 +78,19 @@ export function AdminCatalogPageContent() {
             <button
               type="button"
               onClick={() => void loadMovies()}
-              disabled={isLoading}
+              disabled={isLoading || isRefreshing}
               aria-label="Refresh catalog"
               title="Refresh catalog"
               className="inline-flex h-9 w-9 items-center justify-center rounded border border-zinc-800 text-zinc-500 transition hover:border-zinc-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
             >
               <RefreshCw
                 aria-hidden="true"
-                className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
+                className={`h-4 w-4 ${isLoading || isRefreshing ? "animate-spin" : ""}`}
               />
             </button>
           </div>
 
-          {hasError && (
+          {hasError && movies.length === 0 && !isRefreshing && (
             <div className="mt-5 border-y border-zinc-900 py-8">
               <p className="text-sm text-red-400">Could not load catalog.</p>
               <button
@@ -102,31 +103,14 @@ export function AdminCatalogPageContent() {
             </div>
           )}
 
-          {isLoading && (
-            <div className="mt-5 overflow-hidden border-y border-zinc-900">
-              {Array.from({ length: 5 }, (_, index) => (
-                <div
-                  key={index}
-                  className="flex items-center gap-4 border-b border-zinc-900 py-4 last:border-b-0"
-                >
-                  <div className="h-14 w-10 shrink-0 animate-pulse bg-zinc-900" />
-                  <div className="min-w-0 flex-1 space-y-2">
-                    <div className="h-4 w-1/2 animate-pulse rounded bg-zinc-900" />
-                    <div className="h-3 w-1/3 animate-pulse rounded bg-zinc-900" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {!isLoading && !hasError && movies.length === 0 && (
+          {!isLoading && !isRefreshing && !hasError && movies.length === 0 && (
             <div className="mt-5 border-y border-zinc-900 py-12 text-center">
               <Film aria-hidden="true" className="mx-auto h-7 w-7 text-zinc-700" />
               <p className="mt-3 text-sm text-zinc-500">Your catalog is empty.</p>
             </div>
           )}
 
-          {!isLoading && !hasError && movies.length > 0 && (
+          {!isLoading && movies.length > 0 && (
             <div className="mt-5 overflow-x-auto border-y border-zinc-900">
               <table className="min-w-[720px] w-full text-left text-sm">
                 <thead className="text-xs uppercase tracking-wide text-zinc-600">

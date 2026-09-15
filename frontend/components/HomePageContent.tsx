@@ -187,20 +187,6 @@ export function HomePageContent() {
         </div>
       </section>
 
-      {isLoading && (
-        <section className="mx-auto max-w-7xl px-6 py-10 sm:px-10">
-          <div className="h-5 w-48 animate-pulse rounded bg-zinc-900" />
-          <div className="mt-5 flex gap-4 overflow-hidden">
-            {[1, 2, 3, 4].map((item) => (
-              <div
-                key={item}
-                className="h-64 w-40 shrink-0 animate-pulse rounded bg-zinc-950 sm:h-72 sm:w-48"
-              />
-            ))}
-          </div>
-        </section>
-      )}
-
       {hasError && (
         <p className="mx-auto max-w-7xl px-6 py-10 text-sm text-red-400 sm:px-10">
           Could not load your library right now.
