@@ -2,11 +2,14 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+
+import { useAuth } from "@/components/AuthProvider";
 import { login } from "@/lib/api";
 import { saveAuthToken } from "@/lib/auth";
 
 export function LoginForm() {
   const router = useRouter();
+  const { setAuthenticatedUser } = useAuth();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -23,6 +26,7 @@ export function LoginForm() {
       const response = await login({ username, password });
 
       saveAuthToken(response.token);
+      setAuthenticatedUser(response.user);
 
       router.push(response.user.role === "ADMIN" ? "/admin/movies" : "/");
       router.refresh();

@@ -1,9 +1,9 @@
 "use client";
 
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getCurrentUser } from "@/lib/api";
-import { getAuthToken, removeAuthToken } from "@/lib/auth";
+
+import { useAuth } from "@/components/AuthProvider";
 
 type AuthGuardProps = {
   children: ReactNode;
@@ -11,35 +11,24 @@ type AuthGuardProps = {
 
 export function AuthGuard({ children }: AuthGuardProps) {
   const router = useRouter();
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const { currentUser, isLoading } = useAuth();
 
   useEffect(() => {
-    async function checkAuth() {
-      const token = getAuthToken();
-
-      if (!token) {
-        router.replace("/login");
-        return;
-      }
-
-      try {
-        await getCurrentUser(token);
-        setIsCheckingAuth(false);
-      } catch {
-        removeAuthToken();
-        router.replace("/login");
-      }
+    if (!isLoading && !currentUser) {
+      router.replace("/login");
     }
+  }, [currentUser, isLoading, router]);
 
-    checkAuth();
-  }, [router]);
-
-  if (isCheckingAuth) {
+  if (isLoading) {
     return (
       <main className="min-h-screen bg-black px-8 py-10 text-white">
         <p className="text-sm text-zinc-400">Checking access...</p>
       </main>
     );
+  }
+
+  if (!currentUser) {
+    return null;
   }
 
   return children;

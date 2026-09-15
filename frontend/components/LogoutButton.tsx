@@ -2,13 +2,15 @@
 
 import { useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
-import { removeAuthToken } from "@/lib/auth";
+
+import { useAuth } from "@/components/AuthProvider";
 
 export function LogoutButton() {
   const router = useRouter();
+  const { logout } = useAuth();
 
   function handleLogout() {
-    removeAuthToken();
+    logout();
     router.push("/login");
     router.refresh();
   }

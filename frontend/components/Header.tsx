@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Film,
   Heart,
@@ -14,40 +14,13 @@ import {
 } from "lucide-react";
 
 import { LogoutButton } from "@/components/LogoutButton";
+import { useAuth } from "@/components/AuthProvider";
 import { TsukuyomiLogo } from "@/components/TsukuyomiLogo";
-import { getCurrentUser } from "@/lib/api";
-import { getAuthToken, removeAuthToken } from "@/lib/auth";
-import { AuthUser } from "@/types/auth";
 
 export function Header() {
   const pathname = usePathname();
-  const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
-  const [isLoadingUser, setIsLoadingUser] = useState(true);
+  const { currentUser, isLoading: isLoadingUser } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  useEffect(() => {
-    async function loadUser() {
-      const token = getAuthToken();
-
-      if (!token) {
-        setCurrentUser(null);
-        setIsLoadingUser(false);
-        return;
-      }
-
-      try {
-        const user = await getCurrentUser(token);
-        setCurrentUser(user);
-      } catch {
-        removeAuthToken();
-        setCurrentUser(null);
-      } finally {
-        setIsLoadingUser(false);
-      }
-    }
-
-    loadUser();
-  }, []);
 
   const isAdmin = currentUser?.role === "ADMIN";
   const navLinkClass = (isActive: boolean) =>
