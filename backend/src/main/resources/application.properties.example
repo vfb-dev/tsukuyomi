@@ -1,11 +1,12 @@
-spring.datasource.url=jdbc:postgresql://localhost:5432/tsukuyomi_db
-spring.datasource.username=postgres
-spring.datasource.password=your_password_here
+spring.datasource.url=${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/tsukuyomi_db}
+spring.datasource.username=${SPRING_DATASOURCE_USERNAME:postgres}
+spring.datasource.password=${SPRING_DATASOURCE_PASSWORD:your_password_here}
 
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
+spring.jpa.hibernate.ddl-auto=${JPA_DDL_AUTO:update}
+spring.jpa.show-sql=${JPA_SHOW_SQL:true}
 
-app.auth.username=admin
-app.auth.password=change-me
-app.auth.jwt-secret=change-this-to-a-long-random-secret
-app.auth.jwt-expiration-minutes=1440
+app.frontend-origin=${FRONTEND_ORIGIN:http://localhost:3000}
+app.auth.username=${APP_AUTH_USERNAME:admin}
+app.auth.password=${APP_AUTH_PASSWORD:change-me}
+app.auth.jwt-secret=${APP_AUTH_JWT_SECRET:change-this-to-a-long-random-secret}
+app.auth.jwt-expiration-minutes=${APP_AUTH_JWT_EXPIRATION_MINUTES:1440}
