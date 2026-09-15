@@ -16,9 +16,41 @@ import {
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
 
+type CsrfResponse = {
+  token: string;
+};
+
+let csrfToken: string | null = null;
+
+async function loadCsrfToken(): Promise<string> {
+  const response = await fetch(`${API_BASE_URL}/api/auth/csrf`, {
+    credentials: "include",
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error("Could not load CSRF token.");
+  }
+
+  const body = (await response.json()) as CsrfResponse;
+  csrfToken = body.token;
+
+  return csrfToken;
+}
+
 async function apiFetch(url: string, options: RequestInit = {}) {
+  const method = String(options.method ?? "GET").toUpperCase();
+  const headers = new Headers(options.headers);
+  const unsafeMethods = ["POST", "PUT", "PATCH", "DELETE"];
+
+  if (unsafeMethods.includes(method)) {
+    const token = csrfToken ?? await loadCsrfToken();
+    headers.set("X-XSRF-TOKEN", token);
+  }
+
   return fetch(url, {
     ...options,
+    headers,
     credentials: "include",
   });
 }
@@ -369,6 +401,8 @@ export async function login(input: LoginInput): Promise<AuthUser> {
     throw new Error("Invalid username or password.");
   }
 
+  csrfToken = null;
+
   return response.json();
 }
 
@@ -383,12 +417,16 @@ export async function getCurrentUser(): Promise<AuthUser> {
 }
 
 export async function logout(): Promise<void> {
-  const response = await apiFetch(`${API_BASE_URL}/api/auth/logout`, {
-    method: "POST",
-  });
+  try {
+    const response = await apiFetch(`${API_BASE_URL}/api/auth/logout`, {
+      method: "POST",
+    });
 
-  if (!response.ok) {
-    throw new Error("Could not log out.");
+    if (!response.ok) {
+      throw new Error("Could not log out.");
+    }
+  } finally {
+    csrfToken = null;
   }
 }
 
