@@ -3,11 +3,6 @@ export type LoginInput = {
   password: string;
 };
 
-export type LoginResponse = {
-  token: string;
-  user: AuthUser;
-};
-
 export type AuthUser = {
   username: string;
   role: "ADMIN" | "USER";

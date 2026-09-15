@@ -4,15 +4,20 @@ import { useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
 
 import { useAuth } from "@/components/AuthProvider";
+import { logout as logoutUser } from "@/lib/api";
 
 export function LogoutButton() {
   const router = useRouter();
   const { logout } = useAuth();
 
-  function handleLogout() {
-    logout();
-    router.push("/login");
-    router.refresh();
+  async function handleLogout() {
+    try {
+      await logoutUser();
+    } finally {
+      logout();
+      router.push("/login");
+      router.refresh();
+    }
   }
 
   return (

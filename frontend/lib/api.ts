@@ -1,10 +1,8 @@
-import { getAuthToken } from "@/lib/auth";
 import {
   AppUser,
   AppUserInput,
   AuthUser,
   LoginInput,
-  LoginResponse,
 } from "@/types/auth";
 import { Episode, EpisodeInput } from "@/types/episode";
 import { Movie, MovieInput } from "@/types/movie";
@@ -18,16 +16,11 @@ import {
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
 
-function getAuthHeaders() {
-  const token = getAuthToken();
-
-  if (!token) {
-    throw new Error("You must be logged in.");
-  }
-
-  return {
-    Authorization: `Bearer ${token}`,
-  };
+async function apiFetch(url: string, options: RequestInit = {}) {
+  return fetch(url, {
+    ...options,
+    credentials: "include",
+  });
 }
 
 async function getErrorMessage(response: Response, fallbackMessage: string) {
@@ -87,11 +80,8 @@ export async function getMovies(
     ? `${API_BASE_URL}/api/movies?${queryString}`
     : `${API_BASE_URL}/api/movies`;
 
-  const response = await fetch(url, {
+  const response = await apiFetch(url, {
     cache: "no-store",
-    headers: {
-      ...getAuthHeaders(),
-    },
   });
 
   if (!response.ok) {
@@ -102,11 +92,8 @@ export async function getMovies(
 }
 
 export async function getMovie(id: number): Promise<Movie | null> {
-  const response = await fetch(`${API_BASE_URL}/api/movies/${id}`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/movies/${id}`, {
     cache: "no-store",
-    headers: {
-      ...getAuthHeaders(),
-    },
   });
 
   if (response.status === 404) {
@@ -121,11 +108,10 @@ export async function getMovie(id: number): Promise<Movie | null> {
 }
 
 export async function createMovie(movie: MovieInput): Promise<Movie> {
-  const response = await fetch(`${API_BASE_URL}/api/movies`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/movies`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      ...getAuthHeaders(),
     },
     body: JSON.stringify(movie),
   });
@@ -141,11 +127,10 @@ export async function updateMovie(
   id: number,
   movie: MovieInput,
 ): Promise<Movie> {
-  const response = await fetch(`${API_BASE_URL}/api/movies/${id}`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/movies/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      ...getAuthHeaders(),
     },
     body: JSON.stringify(movie),
   });
@@ -158,11 +143,8 @@ export async function updateMovie(
 }
 
 export async function toggleMovieFavorite(id: number): Promise<Movie> {
-  const response = await fetch(`${API_BASE_URL}/api/movies/${id}/favorite`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/movies/${id}/favorite`, {
     method: "PATCH",
-    headers: {
-      ...getAuthHeaders(),
-    },
   });
 
   if (!response.ok) {
@@ -173,11 +155,8 @@ export async function toggleMovieFavorite(id: number): Promise<Movie> {
 }
 
 export async function deleteMovie(id: number): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/api/movies/${id}`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/movies/${id}`, {
     method: "DELETE",
-    headers: {
-      ...getAuthHeaders(),
-    },
   });
 
   if (!response.ok) {
@@ -186,11 +165,8 @@ export async function deleteMovie(id: number): Promise<void> {
 }
 
 export async function getEpisodes(movieId: number): Promise<Episode[]> {
-  const response = await fetch(`${API_BASE_URL}/api/movies/${movieId}/episodes`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/movies/${movieId}/episodes`, {
     cache: "no-store",
-    headers: {
-      ...getAuthHeaders(),
-    },
   });
 
   if (!response.ok) {
@@ -204,13 +180,10 @@ export async function getEpisode(
   movieId: number,
   episodeId: number,
 ): Promise<Episode> {
-  const response = await fetch(
+  const response = await apiFetch(
     `${API_BASE_URL}/api/movies/${movieId}/episodes/${episodeId}`,
     {
       cache: "no-store",
-      headers: {
-        ...getAuthHeaders(),
-      },
     },
   );
 
@@ -225,11 +198,10 @@ export async function createEpisode(
   movieId: number,
   episode: EpisodeInput,
 ): Promise<Episode> {
-  const response = await fetch(`${API_BASE_URL}/api/movies/${movieId}/episodes`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/movies/${movieId}/episodes`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      ...getAuthHeaders(),
     },
     body: JSON.stringify(episode),
   });
@@ -246,13 +218,12 @@ export async function updateEpisode(
   episodeId: number,
   episode: EpisodeInput,
 ): Promise<Episode> {
-  const response = await fetch(
+  const response = await apiFetch(
     `${API_BASE_URL}/api/movies/${movieId}/episodes/${episodeId}`,
     {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        ...getAuthHeaders(),
       },
       body: JSON.stringify(episode),
     },
@@ -269,13 +240,10 @@ export async function deleteEpisode(
   movieId: number,
   episodeId: number,
 ): Promise<void> {
-  const response = await fetch(
+  const response = await apiFetch(
     `${API_BASE_URL}/api/movies/${movieId}/episodes/${episodeId}`,
     {
       method: "DELETE",
-      headers: {
-        ...getAuthHeaders(),
-      },
     },
   );
 
@@ -288,13 +256,10 @@ export async function getEpisodeWatchProgress(
   movieId: number,
   episodeId: number,
 ): Promise<EpisodeWatchProgress> {
-  const response = await fetch(
+  const response = await apiFetch(
     `${API_BASE_URL}/api/movies/${movieId}/episodes/${episodeId}/progress`,
     {
       cache: "no-store",
-      headers: {
-        ...getAuthHeaders(),
-      },
     },
   );
 
@@ -308,13 +273,10 @@ export async function getEpisodeWatchProgress(
 export async function getWatchProgress(
   movieId: number,
 ): Promise<WatchProgress> {
-  const response = await fetch(
+  const response = await apiFetch(
     `${API_BASE_URL}/api/movies/${movieId}/progress`,
     {
       cache: "no-store",
-      headers: {
-        ...getAuthHeaders(),
-      },
     },
   );
 
@@ -326,11 +288,8 @@ export async function getWatchProgress(
 }
 
 export async function getContinueWatching(): Promise<ContinueWatchingItem[]> {
-  const response = await fetch(`${API_BASE_URL}/api/watch-progress/continue`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/watch-progress/continue`, {
     cache: "no-store",
-    headers: {
-      ...getAuthHeaders(),
-    },
   });
 
   if (!response.ok) {
@@ -341,11 +300,8 @@ export async function getContinueWatching(): Promise<ContinueWatchingItem[]> {
 }
 
 export async function getCompletedWatching(): Promise<ContinueWatchingItem[]> {
-  const response = await fetch(`${API_BASE_URL}/api/watch-progress/completed`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/watch-progress/completed`, {
     cache: "no-store",
-    headers: {
-      ...getAuthHeaders(),
-    },
   });
 
   if (!response.ok) {
@@ -359,13 +315,12 @@ export async function saveWatchProgress(
   movieId: number,
   progress: WatchProgressInput,
 ): Promise<WatchProgress> {
-  const response = await fetch(
+  const response = await apiFetch(
     `${API_BASE_URL}/api/movies/${movieId}/progress`,
     {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        ...getAuthHeaders(),
       },
       body: JSON.stringify(progress),
     },
@@ -383,13 +338,12 @@ export async function saveEpisodeWatchProgress(
   episodeId: number,
   progress: WatchProgressInput,
 ): Promise<EpisodeWatchProgress> {
-  const response = await fetch(
+  const response = await apiFetch(
     `${API_BASE_URL}/api/movies/${movieId}/episodes/${episodeId}/progress`,
     {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        ...getAuthHeaders(),
       },
       body: JSON.stringify(progress),
     },
@@ -402,8 +356,8 @@ export async function saveEpisodeWatchProgress(
   return response.json();
 }
 
-export async function login(input: LoginInput): Promise<LoginResponse> {
-  const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+export async function login(input: LoginInput): Promise<AuthUser> {
+  const response = await apiFetch(`${API_BASE_URL}/api/auth/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -418,12 +372,8 @@ export async function login(input: LoginInput): Promise<LoginResponse> {
   return response.json();
 }
 
-export async function getCurrentUser(token: string): Promise<AuthUser> {
-  const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+export async function getCurrentUser(): Promise<AuthUser> {
+  const response = await apiFetch(`${API_BASE_URL}/api/auth/me`);
 
   if (!response.ok) {
     throw new Error("Could not load current user.");
@@ -432,12 +382,19 @@ export async function getCurrentUser(token: string): Promise<AuthUser> {
   return response.json();
 }
 
+export async function logout(): Promise<void> {
+  const response = await apiFetch(`${API_BASE_URL}/api/auth/logout`, {
+    method: "POST",
+  });
+
+  if (!response.ok) {
+    throw new Error("Could not log out.");
+  }
+}
+
 export async function getUsers(): Promise<AppUser[]> {
-  const response = await fetch(`${API_BASE_URL}/api/users`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/users`, {
     cache: "no-store",
-    headers: {
-      ...getAuthHeaders(),
-    },
   });
 
   if (!response.ok) {
@@ -448,11 +405,10 @@ export async function getUsers(): Promise<AppUser[]> {
 }
 
 export async function createUser(user: AppUserInput): Promise<AppUser> {
-  const response = await fetch(`${API_BASE_URL}/api/users`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/users`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      ...getAuthHeaders(),
     },
     body: JSON.stringify(user),
   });
@@ -465,11 +421,8 @@ export async function createUser(user: AppUserInput): Promise<AppUser> {
 }
 
 export async function deleteUser(id: number): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/api/users/${id}`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/users/${id}`, {
     method: "DELETE",
-    headers: {
-      ...getAuthHeaders(),
-    },
   });
 
   if (!response.ok) {

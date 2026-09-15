@@ -10,3 +10,5 @@ app.auth.username=${APP_AUTH_USERNAME:admin}
 app.auth.password=${APP_AUTH_PASSWORD:change-me}
 app.auth.jwt-secret=${APP_AUTH_JWT_SECRET:change-this-to-a-long-random-secret}
 app.auth.jwt-expiration-minutes=${APP_AUTH_JWT_EXPIRATION_MINUTES:1440}
+app.auth.cookie-secure=${APP_AUTH_COOKIE_SECURE:false}
+app.auth.cookie-same-site=${APP_AUTH_COOKIE_SAME_SITE:Lax}

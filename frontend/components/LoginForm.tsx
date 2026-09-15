@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 
 import { useAuth } from "@/components/AuthProvider";
 import { login } from "@/lib/api";
-import { saveAuthToken } from "@/lib/auth";
 
 export function LoginForm() {
   const router = useRouter();
@@ -25,10 +24,9 @@ export function LoginForm() {
     try {
       const response = await login({ username, password });
 
-      saveAuthToken(response.token);
-      setAuthenticatedUser(response.user);
+      setAuthenticatedUser(response);
 
-      router.push(response.user.role === "ADMIN" ? "/admin/movies" : "/");
+      router.push(response.role === "ADMIN" ? "/admin/movies" : "/");
       router.refresh();
     } catch (error) {
       setError(error instanceof Error ? error.message : "Could not log in.");

@@ -9,7 +9,6 @@ import {
 } from "react";
 
 import { getCurrentUser } from "@/lib/api";
-import { getAuthToken, removeAuthToken } from "@/lib/auth";
 import { AuthUser } from "@/types/auth";
 
 type AuthContextValue = {
@@ -31,19 +30,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     async function loadInitialUser() {
-      const token = getAuthToken();
-
-      if (!token) {
-        setCurrentUser(null);
-        setIsLoading(false);
-        return;
-      }
-
       try {
-        const user = await getCurrentUser(token);
+        const user = await getCurrentUser();
         setCurrentUser(user);
       } catch {
-        removeAuthToken();
         setCurrentUser(null);
       } finally {
         setIsLoading(false);
@@ -59,7 +49,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }
 
   function logout() {
-    removeAuthToken();
     setCurrentUser(null);
     setIsLoading(false);
   }
