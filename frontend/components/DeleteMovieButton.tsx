@@ -1,20 +1,28 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Trash2 } from "lucide-react";
 
 import { deleteMovie } from "../lib/api";
+import { queryKeys } from "../lib/queryKeys";
 
 type DeleteMovieButtonProps = {
   movieId: number;
-  onDeleted?: () => void;
 };
 
-export function DeleteMovieButton({ movieId, onDeleted }: DeleteMovieButtonProps) {
-  const router = useRouter();
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [hasError, setHasError] = useState(false);
+export function DeleteMovieButton({ movieId }: DeleteMovieButtonProps) {
+  const queryClient = useQueryClient();
+  const deleteMutation = useMutation({
+    mutationFn: () => deleteMovie(movieId),
+    onSuccess: async () => {
+      await queryClient.refetchQueries({
+        queryKey: queryKeys.movies.all,
+        type: "all",
+      });
+    },
+  });
+  const isDeleting = deleteMutation.isPending;
+  const hasError = deleteMutation.isError;
 
   async function handleDelete() {
     const confirmed = window.confirm("Delete this movie?");
@@ -24,17 +32,9 @@ export function DeleteMovieButton({ movieId, onDeleted }: DeleteMovieButtonProps
     }
 
     try {
-      setIsDeleting(true);
-      setHasError(false);
-
-      await deleteMovie(movieId);
-
-      onDeleted?.();
-      router.refresh();
+      await deleteMutation.mutateAsync();
     } catch {
-      setHasError(true);
-    } finally {
-      setIsDeleting(false);
+      // The mutation state renders the failure message.
     }
   }
 

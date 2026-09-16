@@ -1,47 +1,28 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Film, Pencil, Plus, RefreshCw, Tv } from "lucide-react";
 
 import { DeleteMovieButton } from "@/components/DeleteMovieButton";
 import { PosterImage } from "@/components/PosterImage";
 import { getMovies } from "@/lib/api";
+import { queryKeys } from "@/lib/queryKeys";
 import { Movie } from "@/types/movie";
 
+const EMPTY_MOVIES: Movie[] = [];
+
 export function AdminCatalogPageContent() {
-  const [movies, setMovies] = useState<Movie[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [hasError, setHasError] = useState(false);
-
-  async function loadMovies() {
-    try {
-      setIsRefreshing(true);
-      setHasError(false);
-      const loadedMovies = await getMovies();
-      setMovies(loadedMovies);
-    } catch {
-      setHasError(true);
-    } finally {
-      setIsRefreshing(false);
-    }
-  }
-
-  useEffect(() => {
-    async function loadInitialMovies() {
-      try {
-        const loadedMovies = await getMovies();
-        setMovies(loadedMovies);
-      } catch {
-        setHasError(true);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    loadInitialMovies();
-  }, []);
+  const moviesQuery = useQuery({
+    queryKey: queryKeys.movies.all,
+    queryFn: () => getMovies(),
+    refetchOnMount: "always",
+  });
+  const movies = moviesQuery.data ?? EMPTY_MOVIES;
+  const isLoading = moviesQuery.isLoading;
+  const isRefreshing = moviesQuery.isFetching;
+  const hasError = moviesQuery.isError;
+  const loadMovies = () => moviesQuery.refetch();
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-10 sm:px-8">
@@ -167,7 +148,6 @@ export function AdminCatalogPageContent() {
                           </Link>
                           <DeleteMovieButton
                             movieId={movie.id}
-                            onDeleted={loadMovies}
                           />
                         </div>
                       </td>

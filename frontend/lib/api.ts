@@ -40,19 +40,31 @@ async function loadCsrfToken(): Promise<string> {
 
 async function apiFetch(url: string, options: RequestInit = {}) {
   const method = String(options.method ?? "GET").toUpperCase();
-  const headers = new Headers(options.headers);
   const unsafeMethods = ["POST", "PUT", "PATCH", "DELETE"];
 
-  if (unsafeMethods.includes(method)) {
-    const token = csrfToken ?? await loadCsrfToken();
-    headers.set("X-XSRF-TOKEN", token);
+  async function sendRequest(): Promise<Response> {
+    const headers = new Headers(options.headers);
+
+    if (unsafeMethods.includes(method)) {
+      const token = csrfToken ?? await loadCsrfToken();
+      headers.set("X-XSRF-TOKEN", token);
+    }
+
+    return fetch(url, {
+      ...options,
+      headers,
+      credentials: "include",
+    });
   }
 
-  return fetch(url, {
-    ...options,
-    headers,
-    credentials: "include",
-  });
+  let response = await sendRequest();
+
+  if (unsafeMethods.includes(method) && response.status === 403) {
+    csrfToken = null;
+    response = await sendRequest();
+  }
+
+  return response;
 }
 
 async function getErrorMessage(response: Response, fallbackMessage: string) {

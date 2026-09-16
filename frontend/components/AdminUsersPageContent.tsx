@@ -1,5 +1,6 @@
 "use client";
 
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FormEvent, useEffect, useState } from "react";
 import {
   Plus,
@@ -12,48 +13,52 @@ import {
 } from "lucide-react";
 
 import { createUser, deleteUser, getUsers } from "@/lib/api";
+import { queryKeys } from "@/lib/queryKeys";
 import { AppUser, AppUserInput } from "@/types/auth";
 
 type FormStatus = "idle" | "saving" | "success" | "error";
 
+const EMPTY_USERS: AppUser[] = [];
+
 export function AdminUsersPageContent() {
-  const [users, setUsers] = useState<AppUser[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [hasError, setHasError] = useState(false);
   const [formStatus, setFormStatus] = useState<FormStatus>("idle");
   const [createError, setCreateError] = useState("");
   const [deletingUserId, setDeletingUserId] = useState<number | null>(null);
   const [deleteError, setDeleteError] = useState("");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
-  async function loadUsers() {
-    try {
-      setIsRefreshing(true);
-      setHasError(false);
-      const loadedUsers = await getUsers();
-      setUsers(loadedUsers);
-    } catch {
-      setHasError(true);
-    } finally {
-      setIsRefreshing(false);
-    }
-  }
-
-  useEffect(() => {
-    async function loadInitialUsers() {
-      try {
-        const loadedUsers = await getUsers();
-        setUsers(loadedUsers);
-      } catch {
-        setHasError(true);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    loadInitialUsers();
-  }, []);
+  const queryClient = useQueryClient();
+  const usersQuery = useQuery({
+    queryKey: queryKeys.users.all,
+    queryFn: getUsers,
+    refetchOnMount: "always",
+  });
+  const createUserMutation = useMutation({
+    mutationFn: createUser,
+    onSuccess: async () => {
+      await queryClient.refetchQueries({
+        queryKey: queryKeys.users.all,
+        type: "all",
+      });
+    },
+  });
+  const deleteUserMutation = useMutation({
+    mutationFn: deleteUser,
+    onSuccess: async () => {
+      await queryClient.refetchQueries({
+        queryKey: queryKeys.users.all,
+        type: "all",
+      });
+    },
+  });
+  const users = usersQuery.data ?? EMPTY_USERS;
+  const isLoading = usersQuery.isLoading;
+  const isRefreshing =
+    usersQuery.isFetching ||
+    createUserMutation.isPending ||
+    deleteUserMutation.isPending;
+  const hasError = usersQuery.isError;
+  const loadUsers = () => usersQuery.refetch();
 
   useEffect(() => {
     if (!isCreateOpen) {
@@ -86,8 +91,7 @@ export function AdminUsersPageContent() {
       setCreateError("");
       setFormStatus("saving");
 
-      await createUser(userInput);
-      await loadUsers();
+      await createUserMutation.mutateAsync(userInput);
 
       form.reset();
       setFormStatus("success");
@@ -110,8 +114,7 @@ export function AdminUsersPageContent() {
     try {
       setDeleteError("");
       setDeletingUserId(userId);
-      await deleteUser(userId);
-      await loadUsers();
+      await deleteUserMutation.mutateAsync(userId);
     } catch (error) {
       setDeleteError(
         error instanceof Error ? error.message : "Could not delete user.",

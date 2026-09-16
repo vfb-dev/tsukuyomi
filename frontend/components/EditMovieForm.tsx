@@ -2,10 +2,12 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { MovieFormFields } from "@/components/MovieFormFields";
 import { updateMovie } from "@/lib/api";
 import { getMovieInputFromFormData } from "@/lib/movieForm";
+import { queryKeys } from "@/lib/queryKeys";
 import { Movie } from "@/types/movie";
 
 type EditMovieFormProps = {
@@ -16,7 +18,18 @@ type FormStatus = "idle" | "saving" | "success" | "error";
 
 export function EditMovieForm({ movie }: EditMovieFormProps) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [status, setStatus] = useState<FormStatus>("idle");
+  const updateMovieMutation = useMutation({
+    mutationFn: (updatedMovie: Parameters<typeof updateMovie>[1]) =>
+      updateMovie(movie.id, updatedMovie),
+    onSuccess: async () => {
+      await queryClient.refetchQueries({
+        queryKey: queryKeys.movies.all,
+        type: "all",
+      });
+    },
+  });
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -27,7 +40,7 @@ export function EditMovieForm({ movie }: EditMovieFormProps) {
     try {
       setStatus("saving");
 
-      await updateMovie(movie.id, updatedMovie);
+      await updateMovieMutation.mutateAsync(updatedMovie);
 
       setStatus("success");
       router.push("/admin/movies");

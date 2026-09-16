@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 
 import { MovieFormFields } from "@/components/MovieFormFields";
 import { createMovie } from "@/lib/api";
 import { getMovieInputFromFormData } from "@/lib/movieForm";
+import { queryKeys } from "@/lib/queryKeys";
 
 type CreateMovieFormProps = {
   onMovieCreated?: () => void;
@@ -14,9 +16,19 @@ type CreateMovieFormProps = {
 
 export function CreateMovieForm({ onMovieCreated }: CreateMovieFormProps) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [status, setStatus] = useState<"idle" | "saving" | "success" | "error">(
     "idle",
   );
+  const createMovieMutation = useMutation({
+    mutationFn: createMovie,
+    onSuccess: async () => {
+      await queryClient.refetchQueries({
+        queryKey: queryKeys.movies.all,
+        type: "all",
+      });
+    },
+  });
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -28,7 +40,7 @@ export function CreateMovieForm({ onMovieCreated }: CreateMovieFormProps) {
     try {
       setStatus("saving");
 
-      await createMovie(movieInput);
+      await createMovieMutation.mutateAsync(movieInput);
 
       form.reset();
       onMovieCreated?.();
